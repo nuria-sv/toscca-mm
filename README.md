@@ -1,8 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<p align="center"> # tosccamm
-</p>
+<div alig="center">
+  <center><h1>toscamm</h1></center>
+</div>
 
 <!-- badges: start -->
 ![Status: Finished](https://img.shields.io/badge/status-finished-brightgreen) 
