@@ -6,6 +6,9 @@
 <!-- badges: start -->
 ![Status: Finished](https://img.shields.io/badge/status-finished-brightgreen)
 
+![Build Status](https://github.com/nuria-sv/toscca-mm/actions/workflows/ci.yml/badge.svg)
+![License](https://img.shields.io/github/license/nuria-sv/toscca-mm)
+
 <!-- badges: end -->
 
 _tosccamm_ is the package to implement the Thresholded Ordered Sparse CCA for Multiple Measurements (TOSCCA-MM) method described in Senar, et al., ?? (paper not yeat available).
