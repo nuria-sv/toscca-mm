@@ -41,5 +41,83 @@ This is a basic example over simulated data of TOSCCA-MM
 
 ``` r
 library(tosccamm)
-## basic example code
+
+# for plots
+library(grid)
+library(ggplot2)
+library(gridExtra)
 ```
+
+Estimate the canonical weights and latent paths for $K$ components.
+
+``` r
+res_k = list()
+
+X.temp = XX2
+Y.temp = YY2
+for (k in 1:K) {
+  if(k > 1) {
+    # residualise for subsequent components
+    X.temp = data.frame(X.temp[,c(1,2)],toscca::residualisation(as.matrix(X.temp[,-c(1,2)]), res_k[[k-1]]$alpha, type = "basic") )
+    Y.temp = data.frame(Y.temp[,c(1,2)],toscca::residualisation(as.matrix(Y.temp[,-c(1,2)]), res_k[[k-1]]$beta, type = "basic") )
+
+    nz_a_gen = as.numeric(table(res_k[[k-1]]$alpha != 0)[2])
+    nz_b_gen = as.numeric(table(res_k[[k-1]]$beta != 0)[2])
+  }
+
+  res_k[[k]] <- tosccamm(X.temp, Y.temp, folds = 2,
+                                            nonzero_a = nonz_a, nonzero_b = nonz_b,
+                                            model = "lme", lmeformula = " ~ 0 + poly(time,3) + (1|id)")
+
+}
+#> Loading required package: Matrix
+#> Registered S3 method overwritten by 'quantmod':
+#>   method            from
+#>   as.zoo.data.frame zoo
+#>  Common convergence error: 0 & Iterations: 5  Common convergence error: 0 & Iterations: 5 
+#> k-fold cv max. cancor 
+#>             0.9992169 
+#> 
+#>  ........................................ 
+#>  # nonzero A: 15
+#>  # nonzero B: 5
+#>  ........................................
+```
+
+<img src="man/figures/README-estimate tosccamm-1.png" width="100%" />
+
+    #>  Common convergence error: 0.04707 & Iterations: 21  Common convergence error: 0.05388 & Iterations: 21 
+    #> k-fold cv max. cancor 
+    #>              0.986778 
+    #> 
+    #>  ........................................ 
+    #>  # nonzero A: 40
+    #>  # nonzero B: 39
+    #>  ........................................
+
+<img src="man/figures/README-estimate tosccamm-2.png" width="100%" />
+
+    #>  Common convergence error: 0.03885 & Iterations: 21  Common convergence error: 0.03053 & Iterations: 21 
+    #> k-fold cv max. cancor 
+    #>             0.9577028 
+    #> 
+    #>  ........................................ 
+    #>  # nonzero A: 30
+    #>  # nonzero B: 5
+    #>  ........................................
+
+<img src="man/figures/README-estimate tosccamm-3.png" width="100%" />
+
+### Results
+
+#### Latent paths for $k=1$ and $k=2$
+
+<img src="man/figures/README-plots-1.png" width="100%" />
+
+#### Canonical weights for $k=1$ and $k=2$
+
+<img src="man/figures/README-unnamed-chunk-2-1.png" width="100%" />
+
+#### Latent path and canonical weights for $k=3$, noise
+
+<img src="man/figures/README-plot noise-1.png" width="100%" />

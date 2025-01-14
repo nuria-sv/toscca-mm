@@ -74,7 +74,7 @@ X1 = list()
 X2 = list()
 
 i = 1
-K = 1
+K = 3
 sg = matrix(c(1, 0.6, 0.3, rep(0, 7), 0.6, 1, 0.6, 0.3, 
               rep(0, 6), 0.3, 0.6, 1, 0.6, 0.3, 
               rep(0,5), 0, 0.3, 0.6, 1, 0.6, 0.3, 
@@ -166,8 +166,10 @@ for (k in 1:K) {
 ```
 
 
-Plot results
-```{r plots, include=FALSE}
+### Results
+#### Latent paths for $k=1$ and $k=2$
+
+```{r plots, echo=FALSE, warning=FALSE, message=FALSE}
 lv1 = data.frame(id = XX2$id, time = XX2$time, K1=as.matrix(XX2[,-c(1,2)])%*% (res_k[[1]]$alpha))
 lv2 = data.frame(id = XX2$id, time = XX2$time, K2=as.matrix(XX2[,-c(1,2)])%*% (res_k[[2]]$alpha))
 lv3 = data.frame(id = XX2$id, time = XX2$time, K3=as.matrix(XX2[,-c(1,2)])%*% (res_k[[3]]$alpha))
@@ -253,6 +255,259 @@ grid.arrange(
   shared_legend,
   nrow = 2,  # Arrange the legend in the second row
   heights = c(4, 0.4)  # Adjust the height ratio between the plots and the legend
+)
+```
+
+#### Canonical weights for $k=1$ and $k=2$
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+axisSize = 15
+# Define the column W[,1] as a sample vector (replace this with your actual W[,1])
+W_col1 <-res_k[[1]]$alpha[,1]
+W_col1[W_col1!=0] <-scale(res_k[[1]]$alpha[W_col1!=0], center = F)
+
+# Create a data frame for plotting
+df <- data.frame(
+  Index = 1:length(W_col1),
+  Value = W_col1,
+  Category = ifelse(W_col1 == 0, "Zero", "Non-zero")  # Label zero and non-zero values
+)
+
+plot_alpha1 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
+  geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
+  labs(x = "", y = "Estimated", title = "") +
+  scale_x_continuous(breaks = c(10, 500, 1000)) +  # Set fewer x-axis ticks
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(size = axisSize),  # Increase x-axis text size
+        axis.text.y = element_text(size = axisSize)   # Increase y-axis text size
+  )  # Remove legend if not needed
+
+W_col1 <-res_k[[2]]$alpha
+W_col1[W_col1!=0] <-scale(res_k[[2]]$alpha[W_col1!=0], center = F)
+
+# Create a data frame for plotting
+df <- data.frame(
+  Index = 1:length(W_col1),
+  Value = W_col1,
+  Category = ifelse(W_col1 == 0, "Zero", "Non-zero")  # Label zero and non-zero values
+)
+
+plot_alpha2 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
+  geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
+  labs(x = "", y = "", title = "") +
+  scale_x_continuous(breaks = c(10, 500, 1000)) +  # Set fewer x-axis ticks
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(size = axisSize),  # Increase x-axis text size
+        axis.text.y = element_text(size = axisSize)   # Increase y-axis text size
+  )  # Remove legend if not needed
+
+
+W_col1 <-res_k[[1]]$beta
+W_col1[W_col1!=0] <-scale(res_k[[1]]$beta[W_col1!=0], center = F)
+
+# Create a data frame for plotting
+df <- data.frame(
+  Index = 1:length(W_col1),
+  Value = W_col1,
+  Category = ifelse(W_col1 == 0, "Zero", "Non-zero")  # Label zero and non-zero values
+)
+
+plot_beta1 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
+  geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
+  labs(x = "", y = "", title = "") +
+  scale_x_continuous(breaks = c(10, 100, 200)) +  # Set fewer x-axis ticks
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(size = axisSize),  # Increase x-axis text size
+        axis.text.y = element_text(size = axisSize)   # Increase y-axis text size
+  )  # Remove legend if not needed
+
+
+
+W_col1 <-res_k[[2]]$beta
+W_col1[W_col1!=0] <-scale(res_k[[2]]$beta[W_col1!=0], center = F)
+
+# Create a data frame for plotting
+df <- data.frame(
+  Index = 1:length(W_col1),
+  Value = W_col1,
+  Category = ifelse(W_col1 == 0, "Zero", "Non-zero")  # Label zero and non-zero values
+)
+
+plot_beta2 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
+  geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
+  labs(x = "", y = "", title = "") +
+  scale_x_continuous(breaks = c(10, 100, 200)) +  # Set fewer x-axis ticks
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(size = axisSize),  # Increase x-axis text size
+        axis.text.y = element_text(size = axisSize)   # Increase y-axis text size
+  )  # Remove legend if not needed
+
+
+
+W_col1 <-res_k[[3]]$alpha
+W_col1[W_col1!=0] <-scale(res_k[[3]]$alpha[W_col1!=0], center = F)
+
+# Create a data frame for plotting
+df <- data.frame(
+  Index = 1:length(W_col1),
+  Value = W_col1,
+  Category = ifelse(W_col1 == 0, "Zero", "Non-zero")  # Label zero and non-zero values
+)
+
+plot_alpha3 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
+  geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
+  labs(x = "", y = "", title = "") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(size = axisSize),  # Increase x-axis text size
+        axis.text.y = element_text(size = axisSize)   # Increase y-axis text size
+  )  # Remove legend if not needed
+
+
+W_col1 <-res_k[[3]]$beta
+W_col1[W_col1!=0] <-scale(res_k[[3]]$beta[W_col1!=0], center = F)
+
+# Create a data frame for plotting
+df <- data.frame(
+  Index = 1:length(W_col1),
+  Value = W_col1,
+  Category = ifelse(W_col1 == 0, "Zero", "Non-zero")  # Label zero and non-zero values
+)
+
+plot_beta3 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
+  geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
+  labs(x = "", y = "", title = "") +
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(size = axisSize),  # Increase x-axis text size
+        axis.text.y = element_text(size = axisSize)   # Increase y-axis text size
+  )  # Remove legend if not needed
+
+
+W_col1 <-alpha1
+
+# Create a data frame for plotting
+df <- data.frame(
+  Index = 1:length(W_col1),
+  Value = W_col1,
+  Category = ifelse(W_col1 == 0, "Zero", "Non-zero")  # Label zero and non-zero values
+)
+
+plotTrue_alpha1 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
+  geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = "red")) +  # Define colors
+  labs(x = "", y = "", title = expression(w[x][2])) +
+  scale_x_continuous(breaks = c(10, 500, 1000)) +  # Set fewer x-axis ticks
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(size = axisSize),  # Increase x-axis text size
+        axis.text.y = element_text(size = axisSize)   # Increase y-axis text size
+  )  # Remove legend if not needed
+
+W_col1 <-alpha2
+
+# Create a data frame for plotting
+df <- data.frame(
+  Index = 1:length(W_col1),
+  Value = W_col1,
+  Category = ifelse(W_col1 == 0, "Zero", "Non-zero")  # Label zero and non-zero values
+)
+
+plotTrue_alpha2 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
+  geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = "red")) +  # Define colors
+  labs(x = "", y = "True", title = expression(w[x][1])) +
+  scale_x_continuous(breaks = c(10, 500, 1000)) +  # Set fewer x-axis ticks
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(size = axisSize),  # Increase x-axis text size
+        axis.text.y = element_text(size = axisSize)   # Increase y-axis text size
+  )  # Remove legend if not needed
+
+W_col1 <-beta1
+
+# Create a data frame for plotting
+df <- data.frame(
+  Index = 1:length(W_col1),
+  Value = W_col1,
+  Category = ifelse(W_col1 == 0, "Zero", "Non-zero")  # Label zero and non-zero values
+)
+
+plotTrue_beta1 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
+  geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = "red")) +  # Define colors
+  labs(x = "", y = "", title = expression(w[y][2])) +
+  scale_x_continuous(breaks = c(10, 100, 200)) +  # Set fewer x-axis ticks
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(size = axisSize),  # Increase x-axis text size
+        axis.text.y = element_text(size = axisSize)   # Increase y-axis text size
+  )  # Remove legend if not needed
+
+W_col1 <-beta2
+
+# Create a data frame for plotting
+df <- data.frame(
+  Index = 1:length(W_col1),
+  Value = W_col1,
+  Category = ifelse(W_col1 == 0, "Zero", "Non-zero")  # Label zero and non-zero values
+)
+
+plotTrue_beta2 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
+  geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = "red")) +  # Define colors
+  labs(x = "", y = "", title = expression(w[y][1])) +
+  scale_x_continuous(breaks = c(10, 100, 200)) +  # Set fewer x-axis ticks
+  theme_minimal() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(size = axisSize),  # Increase x-axis text size
+        axis.text.y = element_text(size = axisSize)   # Increase y-axis text size
+        )  # Remove legend if not needed
+
+
+column_titles = c(expression(w[x,1]), expression(w[y,1]), expression(w[x,2]), expression(w[y,2]))
+
+grid.arrange(
+  gridExtra::arrangeGrob(
+    plotTrue_alpha2, plotTrue_beta2,
+    plotTrue_alpha1, plotTrue_beta1,
+    plot_alpha1, plot_beta1,
+    plot_alpha2, plot_beta2,
+    ncol = 4,  # Stack plot1 and plot2 vertically
+    # top = textGrob(paste(" "), gp = gpar(fontsize = 1)),  # Add a placeholder top to allow title alignment
+    left = textGrob("Coefficients", rot = 90, vjust = 1, gp = gpar(fontsize = 15)),  # Common y-axis label
+    bottom = textGrob("Variables", vjust = -0.5, gp = gpar(fontsize = 15))
+  )
+  # shared_legend,
+  # nrow = 2,  # Arrange the legend in the second row
+  # heights = c(4, 0.4)  # Adjust the height ratio between the plots and the legend
+)
+```
+
+
+#### Latent path and canonical weights for $k=3$, noise
+
+```{r plot noise, echo=FALSE, warning=FALSE, message=FALSE}
+grid.arrange(
+  gridExtra::arrangeGrob(
+    plot_alpha3, plot_beta3,
+    ncol = 2,  # Stack plot1 and plot2 vertically
+    # top = textGrob(paste(" "), gp = gpar(fontsize = 1)),  # Add a placeholder top to allow title alignment
+    left = textGrob("Coefficients", rot = 90, vjust = 1, gp = gpar(fontsize = 15)),  # Common y-axis label
+    bottom = textGrob("Variables", vjust = -0.5, gp = gpar(fontsize = 15))
+  ),
+  plot3,
+  nrow = 2,  # Arrange the legend in the second row
+  heights = c(4, 4)  # Adjust the height ratio between the plots and the legend
 )
 ```
 
