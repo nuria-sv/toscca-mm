@@ -7,7 +7,7 @@
 <!-- badges: start -->
 ![Status: Finished](https://img.shields.io/badge/status-finished-brightgreen) 
 ![Build Status](https://github.com/nuria-sv/toscca-mm/actions/workflows/r.yml/badge.svg) 
-![License](https://img.shields.io/github/license/nuria-sv/tosccamm/LICENSE)
+![License](https://img.shields.io/github/license/nuria-sv/tosccamm/LICENSE.md)
 
 <!-- badges: end -->
 
