@@ -8,7 +8,7 @@
 
 ![Build Status](https://github.com/nuria-sv/toscca-mm/actions/workflows/r.yml/badge.svg)
 
-![License](https://img.shields.io/github/license/nuria-sv/toscca-mm)
+![License](https://img.shields.io/github/license/nuria-sv/tosccamm)
 
 <!-- badges: end -->
 
