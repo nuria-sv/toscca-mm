@@ -18,7 +18,8 @@ _tosccamm_ is the package to implement the Thresholded Ordered Sparse CCA for Mu
 You can install the development version of tosccamm like so:
 
 ``` r
-devtools::install_github("nuria-sv/toscamm")
+devtools::install_github("nuria-sv/toscca")    # dependencies
+devtools::install_github("nuria-sv/tosccamm")
 ```
 
 ## TOSCCA-MM
