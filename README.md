@@ -1,30 +1,25 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-<h1 style="text-align:center;">tosccamm</h1>
-
+# tosccamm
 
 <!-- badges: start -->
-![Status: Finished](https://img.shields.io/badge/status-finished-brightgreen) 
-![Build Status](https://github.com/nuria-sv/toscca-mm/actions/workflows/r.yml/badge.svg) 
-![License](https://img.shields.io/github/license/nuria-sv/tosccamm)
 
 <!-- badges: end -->
 
-_tosccamm_ is the package to implement the Thresholded Ordered Sparse CCA for Multiple Measurements (TOSCCA-MM) method described in Senar, et al., ?? (paper not yet available).
+The goal of tosccamm is to …
 
 ## Installation
 
 You can install the development version of tosccamm like so:
 
 ``` r
-devtools::install_github("nuria-sv/toscca")    # dependencies
 devtools::install_github("nuria-sv/tosccamm")
 ```
 
 ## TOSCCA-MM
 
-<img src="vignettes/tosccamm_tikz.png" height="350" width="700" align="center">
+<img src="diagram/tosccamm_tikz.png" height="350" width="700" align="center">
 
 TOSCCA-MM is a novel extension of sparse CCA that incorporates time
 dynamics at the latent variable level through longitudinal models, such
@@ -47,11 +42,12 @@ This is a basic example over simulated data of TOSCCA-MM
 
 ``` r
 library(tosccamm)
-
 # for plots
 library(grid)
 library(ggplot2)
 library(gridExtra)
+library(viridis)
+#> Loading required package: viridisLite
 ```
 
 Estimate the canonical weights and latent paths for $K$ components.
@@ -61,7 +57,7 @@ res_k = list()
 
 X.temp = XX2
 Y.temp = YY2
-for (k in 1:K) {
+for (k in 1:5) {
   if(k > 1) {
     # residualise for subsequent components
     X.temp = data.frame(X.temp[,c(1,2)],toscca::residualisation(as.matrix(X.temp[,-c(1,2)]), res_k[[k-1]]$alpha, type = "basic") )
@@ -76,43 +72,47 @@ for (k in 1:K) {
                                             model = "lme", lmeformula = " ~ 0 + poly(time,3) + (1|id)")
 
 }
-#> Loading required package: Matrix
-#> Registered S3 method overwritten by 'quantmod':
-#>   method            from
-#>   as.zoo.data.frame zoo
 #>  Common convergence error: 0 & Iterations: 5  Common convergence error: 0 & Iterations: 5 
 #> k-fold cv max. cancor 
-#>             0.9992169 
+#>             0.5576636 
 #> 
 #>  ........................................ 
 #>  # nonzero A: 15
 #>  # nonzero B: 5
+#>  ........................................ 
+#>  Common convergence error: 0 & Iterations: 12  Common convergence error: 0 & Iterations: 15 
+#> k-fold cv max. cancor 
+#>             0.6563199 
+#> 
+#>  ........................................ 
+#>  # nonzero A: 10
+#>  # nonzero B: 5
+#>  ........................................ 
+#>  Common convergence error: 0.02945 & Iterations: 21  Common convergence error: 0.02634 & Iterations: 21 
+#> k-fold cv max. cancor 
+#>             0.1930129 
+#> 
+#>  ........................................ 
+#>  # nonzero A: 20
+#>  # nonzero B: 5
+#>  ........................................ 
+#>  Common convergence error: 0.02012 & Iterations: 21  Common convergence error: 0.03629 & Iterations: 21 
+#> k-fold cv max. cancor 
+#>             0.2210444 
+#> 
+#>  ........................................ 
+#>  # nonzero A: 5
+#>  # nonzero B: 5
+#>  ........................................ 
+#>  Common convergence error: 0.0146 & Iterations: 21  Common convergence error: 0.03219 & Iterations: 21 
+#> k-fold cv max. cancor 
+#>             0.2377166 
+#> 
+#>  ........................................ 
+#>  # nonzero A: 50
+#>  # nonzero B: 39
 #>  ........................................
 ```
-
-<img src="man/figures/README-estimate tosccamm-1.png" width="100%" />
-
-    #>  Common convergence error: 0.04707 & Iterations: 21  Common convergence error: 0.05388 & Iterations: 21 
-    #> k-fold cv max. cancor 
-    #>              0.986778 
-    #> 
-    #>  ........................................ 
-    #>  # nonzero A: 40
-    #>  # nonzero B: 39
-    #>  ........................................
-
-<img src="man/figures/README-estimate tosccamm-2.png" width="100%" />
-
-    #>  Common convergence error: 0.03885 & Iterations: 21  Common convergence error: 0.03053 & Iterations: 21 
-    #> k-fold cv max. cancor 
-    #>             0.9577028 
-    #> 
-    #>  ........................................ 
-    #>  # nonzero A: 30
-    #>  # nonzero B: 5
-    #>  ........................................
-
-<img src="man/figures/README-estimate tosccamm-3.png" width="100%" />
 
 ### Results
 
@@ -126,4 +126,64 @@ for (k in 1:K) {
 
 #### Latent path and canonical weights for $k=3$, noise
 
-<img src="man/figures/README-plot noise-1.png" width="100%" />
+<img src="man/figures/README-plotNoise-1.png" width="100%" />
+
+<img src="man/figures/README-gridPlots-1.png" width="100%" /><img src="man/figures/README-gridPlots-2.png" width="100%" /><img src="man/figures/README-gridPlots-3.png" width="100%" />
+
+    #>  Common convergence error: 0 & Iterations: 5  Common convergence error: 0 & Iterations: 5 
+    #> k-fold cv max. cancor 
+    #>             0.5576636 
+    #> 
+    #>  ........................................ 
+    #>  # nonzero A: 15
+    #>  # nonzero B: 5
+    #>  ........................................ 
+    #>  Common convergence error: 0 & Iterations: 6  Common convergence error: 0 & Iterations: 10 
+    #> k-fold cv max. cancor 
+    #>             0.6542468 
+    #> 
+    #>  ........................................ 
+    #>  # nonzero A: 15
+    #>  # nonzero B: 5
+    #>  ........................................ 
+    #>  Common convergence error: 0.44569 & Iterations: 21  Common convergence error: 0.00536 & Iterations: 21 
+    #> k-fold cv max. cancor 
+    #>            0.07551123 
+    #> 
+    #>  ........................................ 
+    #>  # nonzero A: 15
+    #>  # nonzero B: 5
+    #>  ........................................ 
+    #>  Common convergence error: 4e-05 & Iterations: 21  Common convergence error: 0.05612 & Iterations: 21 
+    #> k-fold cv max. cancor 
+    #>            0.03704981 
+    #> 
+    #>  ........................................ 
+    #>  # nonzero A: 15
+    #>  # nonzero B: 5
+    #>  ........................................ 
+    #>  Common convergence error: 0.04749 & Iterations: 21  Common convergence error: 0.06966 & Iterations: 21 
+    #> k-fold cv max. cancor 
+    #>            0.04121069 
+    #> 
+    #>  ........................................ 
+    #>  # nonzero A: 15
+    #>  # nonzero B: 5
+    #>  ........................................
+    #> Loading required package: iterators
+    #> Loading required package: parallel
+    #> Warning: The dot-dot notation (`..count..`) was deprecated in ggplot2 3.4.0.
+    #> ℹ Please use `after_stat(count)` instead.
+    #> ℹ The deprecated feature was likely used in the tosccamm package.
+    #>   Please report the issue to the authors.
+    #> This warning is displayed once every 8 hours.
+    #> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    #> generated.
+
+<img src="man/figures/README-permutationTesting-1.png" width="100%" />
+
+    #> Empirical p-values:
+    #> 0.976
+    #> 0.953
+    #> 1
+    #> NULL
