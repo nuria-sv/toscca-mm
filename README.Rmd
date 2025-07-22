@@ -53,7 +53,12 @@ Furthermore, modelling time in the latent space significantly reduces computatio
 This is a basic example over simulated data of TOSCCA-MM
 
 ```{r load}
-library(tosccamm)
+# library(tosccamm)
+source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccam_permut.R")
+source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccamm_core.R")
+source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccamm_folds.R")
+source("C:/Users/PC/OneDrive/github/tosccamm/R/toscca_helpers.R")
+source("C:/Users/PC/OneDrive/github/tosccamm/R/general_functions.R")
 # for plots
 library(grid)
 library(ggplot2)
@@ -95,10 +100,10 @@ print(i)
 #Simulate  times of measurement
 times = 1:10
 #random effect
-ui = rnorm(1,0,1)
+ui = rnorm(1,0,0.7)
 #Shared canonical vector (with some time effect)
 Zi1 = -(1+times/max(times))^3 + times * 0.5 + ui
-Zi2 = (sin(100*times))^times +   times * 0.65 +rnorm(1,0,1)
+Zi2 = (sin(100*times))^times +   times * 0.65 +rnorm(1,0,0.75)
 Zi = cbind(Zi1, Zi2)
 alpha = cbind(alpha1, alpha2)
 beta = cbind(beta1, beta2)
@@ -545,7 +550,9 @@ for (k in 1:5) {
                                             model = "lme", lmeformula = " ~ 0 + poly(time,3) + (1|id)")
 
 }
-perm_cc = toscamm.perm(XX2, YY2, nonzero_a = sapply(1:K, function(k)res_k[[k]]$nonzero_a), nonzero_b = sapply(1:K, function(k)res_k[[k]]$nonzero_b), K, alpha_init = "uniform", folds = 1, toPlot = T, draws = 1000,
+K = length(res_k)
+perm_cc = toscamm.perm(XX2, YY2, nonzero_a = sapply(1:K, function(k)res_k[[k]]$nonzero_a), nonzero_b = sapply(1:K, function(k)res_k[[k]]$nonzero_b), K, alpha_init = "uniform", folds = 1, toPlot = T, draws = 1000, model = "lme", 
+                       lmeformula = " ~ 0 + poly(time,3) + (1|id)",
                            cancor=sapply(1:K, function(k)res_k[[k]]$cancor), bootCCA = NULL, silent = TRUE, parallel_logic = TRUE,
                          nuisanceVar = 0, testStatType = "CC")
 

@@ -19,7 +19,7 @@
 #' @param testStatType Character. Choice of test-statistic c("CC", "Wilks", "Roy"),
 #' @param silent Logical. TRUE to keep silent output messages. Default is FALSE.
 #' @param model Character. c("lme", "ar"). Model to fit longitudinal latent space.
-#' @param lmeforemula Character. LME formula. Default is " ~ -1 + time + (1|id)".
+#' @param lmeformula Character. LME formula. Default is " ~ -1 + time + (1|id)".
 #' @param arformula Numeric vector. Choice of ARIMA. Default is c(1,0,0).
 #' @return Permutated canonical correlation for ell K and p-values.
 #'
@@ -31,7 +31,7 @@
 toscamm.perm = function (A, B, nonzero_a, nonzero_b, K, alpha_init = c("eigen",
                                                                        "random", "uniform"), folds = 1, toPlot = FALSE, draws = 1000,
                          cancor, bootCCA = NULL, silent = TRUE, parallel_logic = TRUE,
-                         nuisanceVar = 0, testStatType = "CC", model = "lme", lmeforemula = " ~ 0 + poly(time,3) + (1|id)", arformula = NULL )
+                         nuisanceVar = 0, testStatType = "CC", model = "lme", lmeformula = " ~ 0 + poly(time,3) + (1|id)", arformula = NULL )
 {
 
   # if (!requireNamespace("EnvStats", quietly = TRUE))
@@ -75,7 +75,7 @@ toscamm.perm = function (A, B, nonzero_a, nonzero_b, K, alpha_init = c("eigen",
 
           res_perm[[k]] <- tosccamm(X.temp, Y.temp, folds = 2,
                                  nonzero_a[k], nonzero_b[k],
-                                 model = model, lmeformula = lmeforemula)
+                                 model = model, lmeformula = lmeformula)
 
          #  for (s in unique(X.temp$time)) {
          #    w = unique(intersect(X.temp[X.temp$time==s,]$id, Y.temp[Y.temp$time==s,]$id))

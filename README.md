@@ -41,7 +41,12 @@ computational burden.
 This is a basic example over simulated data of TOSCCA-MM
 
 ``` r
-library(tosccamm)
+# library(tosccamm)
+source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccam_permut.R")
+source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccamm_core.R")
+source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccamm_folds.R")
+source("C:/Users/PC/OneDrive/github/tosccamm/R/toscca_helpers.R")
+source("C:/Users/PC/OneDrive/github/tosccamm/R/general_functions.R")
 # for plots
 library(grid)
 library(ggplot2)
@@ -72,45 +77,45 @@ for (k in 1:5) {
                                             model = "lme", lmeformula = " ~ 0 + poly(time,3) + (1|id)")
 
 }
-#>  Common convergence error: 0 & Iterations: 5  Common convergence error: 0 & Iterations: 5 
+#>  Common convergence error: 0 & Iterations: 5  Common convergence error: 0 & Iterations: 6 
 #> k-fold cv max. cancor 
-#>             0.5576636 
-#> 
-#>  ........................................ 
-#>  # nonzero A: 15
-#>  # nonzero B: 5
-#>  ........................................ 
-#>  Common convergence error: 0 & Iterations: 12  Common convergence error: 0 & Iterations: 15 
-#> k-fold cv max. cancor 
-#>             0.6563199 
+#>             0.4191102 
 #> 
 #>  ........................................ 
 #>  # nonzero A: 10
 #>  # nonzero B: 5
 #>  ........................................ 
-#>  Common convergence error: 0.02945 & Iterations: 21  Common convergence error: 0.02634 & Iterations: 21 
+#>  Common convergence error: 2e-05 & Iterations: 21  Common convergence error: 0.00034 & Iterations: 21 
 #> k-fold cv max. cancor 
-#>             0.1930129 
+#>             0.3968518 
 #> 
 #>  ........................................ 
-#>  # nonzero A: 20
+#>  # nonzero A: 10
+#>  # nonzero B: 28
+#>  ........................................ 
+#>  Common convergence error: 0.0324 & Iterations: 21  Common convergence error: 0.0282 & Iterations: 21 
+#> k-fold cv max. cancor 
+#>             0.1791438 
+#> 
+#>  ........................................ 
+#>  # nonzero A: 10
 #>  # nonzero B: 5
 #>  ........................................ 
-#>  Common convergence error: 0.02012 & Iterations: 21  Common convergence error: 0.03629 & Iterations: 21 
+#>  Common convergence error: 0.04798 & Iterations: 21  Common convergence error: 0.03029 & Iterations: 21 
 #> k-fold cv max. cancor 
-#>             0.2210444 
+#>             0.3115394 
 #> 
 #>  ........................................ 
 #>  # nonzero A: 5
-#>  # nonzero B: 5
+#>  # nonzero B: 50
 #>  ........................................ 
-#>  Common convergence error: 0.0146 & Iterations: 21  Common convergence error: 0.03219 & Iterations: 21 
+#>  Common convergence error: 0.06816 & Iterations: 21  Common convergence error: 0.06314 & Iterations: 21 
 #> k-fold cv max. cancor 
-#>             0.2377166 
+#>             0.3007874 
 #> 
 #>  ........................................ 
-#>  # nonzero A: 50
-#>  # nonzero B: 39
+#>  # nonzero A: 5
+#>  # nonzero B: 16
 #>  ........................................
 ```
 
@@ -130,52 +135,55 @@ for (k in 1:5) {
 
 <img src="man/figures/README-gridPlots-1.png" width="100%" /><img src="man/figures/README-gridPlots-2.png" width="100%" /><img src="man/figures/README-gridPlots-3.png" width="100%" />
 
-    #>  Common convergence error: 0 & Iterations: 5  Common convergence error: 0 & Iterations: 5 
+    #>  Common convergence error: 0 & Iterations: 4  Common convergence error: 0 & Iterations: 6 
     #> k-fold cv max. cancor 
-    #>             0.5576636 
+    #>             0.4191102 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 15
+    #>  # nonzero A: 10
     #>  # nonzero B: 5
     #>  ........................................ 
-    #>  Common convergence error: 0 & Iterations: 6  Common convergence error: 0 & Iterations: 10 
+    #>  Common convergence error: 0 & Iterations: 9  Common convergence error: 0 & Iterations: 21 
     #> k-fold cv max. cancor 
-    #>             0.6542468 
+    #>             0.1683788 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 15
+    #>  # nonzero A: 10
     #>  # nonzero B: 5
     #>  ........................................ 
-    #>  Common convergence error: 0.44569 & Iterations: 21  Common convergence error: 0.00536 & Iterations: 21 
+    #>  Common convergence error: 0 & Iterations: 9  Common convergence error: 0 & Iterations: 16 
     #> k-fold cv max. cancor 
-    #>            0.07551123 
+    #>             0.3118109 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 15
+    #>  # nonzero A: 10
     #>  # nonzero B: 5
     #>  ........................................ 
-    #>  Common convergence error: 4e-05 & Iterations: 21  Common convergence error: 0.05612 & Iterations: 21 
+    #>  Common convergence error: 0 & Iterations: 20  Common convergence error: 0.09223 & Iterations: 21 
     #> k-fold cv max. cancor 
-    #>            0.03704981 
+    #>             0.0630195 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 15
+    #>  # nonzero A: 10
     #>  # nonzero B: 5
     #>  ........................................ 
-    #>  Common convergence error: 0.04749 & Iterations: 21  Common convergence error: 0.06966 & Iterations: 21 
+    #>  Common convergence error: 0.01518 & Iterations: 21  Common convergence error: 0.00273 & Iterations: 21 
     #> k-fold cv max. cancor 
-    #>            0.04121069 
+    #>           0.007440166 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 15
+    #>  # nonzero A: 10
     #>  # nonzero B: 5
     #>  ........................................
     #> Loading required package: iterators
     #> Loading required package: parallel
+    #> Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
+    #> ℹ Please use `linewidth` instead.
+    #> This warning is displayed once every 8 hours.
+    #> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+    #> generated.
     #> Warning: The dot-dot notation (`..count..`) was deprecated in ggplot2 3.4.0.
     #> ℹ Please use `after_stat(count)` instead.
-    #> ℹ The deprecated feature was likely used in the tosccamm package.
-    #>   Please report the issue to the authors.
     #> This warning is displayed once every 8 hours.
     #> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
     #> generated.
@@ -183,7 +191,9 @@ for (k in 1:5) {
 <img src="man/figures/README-permutationTesting-1.png" width="100%" />
 
     #> Empirical p-values:
-    #> 0.976
-    #> 0.953
-    #> 1
+    #> 0
+    #> 0.062
+    #> 0.001
+    #> 0.476
+    #> 0.969
     #> NULL

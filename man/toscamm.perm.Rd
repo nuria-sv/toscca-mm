@@ -21,7 +21,7 @@ toscamm.perm(
   nuisanceVar = 0,
   testStatType = "CC",
   model = "lme",
-  lmeforemula = " ~ 0 + poly(time,3) + (1|id)",
+  lmeformula = " ~ 0 + poly(time,3) + (1|id)",
   arformula = NULL
 )
 }
@@ -58,7 +58,7 @@ toscamm.perm(
 
 \item{model}{Character. c("lme", "ar"). Model to fit longitudinal latent space.}
 
-\item{lmeforemula}{Character. LME formula. Default is " ~ -1 + time + (1|id)".}
+\item{lmeformula}{Character. LME formula. Default is " ~ -1 + time + (1|id)".}
 
 \item{arformula}{Numeric vector. Choice of ARIMA. Default is c(1,0,0).}
 }
