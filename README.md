@@ -77,45 +77,45 @@ for (k in 1:5) {
                                             model = "lme", lmeformula = " ~ 0 + poly(time,3) + (1|id)")
 
 }
-#>  Common convergence error: 0 & Iterations: 5  Common convergence error: 0 & Iterations: 6 
+#>  Common convergence error: 0 & Iterations: 5  Common convergence error: 0 & Iterations: 5 
 #> k-fold cv max. cancor 
-#>             0.4191102 
+#>             0.4718113 
+#> 
+#>  ........................................ 
+#>  # nonzero A: 20
+#>  # nonzero B: 5
+#>  ........................................ 
+#>  Common convergence error: 0 & Iterations: 21  Common convergence error: 0 & Iterations: 10 
+#> k-fold cv max. cancor 
+#>             0.4450169 
 #> 
 #>  ........................................ 
 #>  # nonzero A: 10
 #>  # nonzero B: 5
 #>  ........................................ 
-#>  Common convergence error: 2e-05 & Iterations: 21  Common convergence error: 0.00034 & Iterations: 21 
+#>  Common convergence error: 0.04181 & Iterations: 21  Common convergence error: 0.02173 & Iterations: 21 
 #> k-fold cv max. cancor 
-#>             0.3968518 
-#> 
-#>  ........................................ 
-#>  # nonzero A: 10
-#>  # nonzero B: 28
-#>  ........................................ 
-#>  Common convergence error: 0.0324 & Iterations: 21  Common convergence error: 0.0282 & Iterations: 21 
-#> k-fold cv max. cancor 
-#>             0.1791438 
-#> 
-#>  ........................................ 
-#>  # nonzero A: 10
-#>  # nonzero B: 5
-#>  ........................................ 
-#>  Common convergence error: 0.04798 & Iterations: 21  Common convergence error: 0.03029 & Iterations: 21 
-#> k-fold cv max. cancor 
-#>             0.3115394 
+#>             0.3632964 
 #> 
 #>  ........................................ 
 #>  # nonzero A: 5
 #>  # nonzero B: 50
 #>  ........................................ 
-#>  Common convergence error: 0.06816 & Iterations: 21  Common convergence error: 0.06314 & Iterations: 21 
+#>  Common convergence error: 0.0515 & Iterations: 21  Common convergence error: 0.04285 & Iterations: 21 
 #> k-fold cv max. cancor 
-#>             0.3007874 
+#>             0.4227209 
 #> 
 #>  ........................................ 
-#>  # nonzero A: 5
-#>  # nonzero B: 16
+#>  # nonzero A: 45
+#>  # nonzero B: 28
+#>  ........................................ 
+#>  Common convergence error: 0.02489 & Iterations: 21  Common convergence error: 0.03177 & Iterations: 21 
+#> k-fold cv max. cancor 
+#>             0.2651134 
+#> 
+#>  ........................................ 
+#>  # nonzero A: 30
+#>  # nonzero B: 50
 #>  ........................................
 ```
 
@@ -135,44 +135,44 @@ for (k in 1:5) {
 
 <img src="man/figures/README-gridPlots-1.png" width="100%" /><img src="man/figures/README-gridPlots-2.png" width="100%" /><img src="man/figures/README-gridPlots-3.png" width="100%" />
 
-    #>  Common convergence error: 0 & Iterations: 4  Common convergence error: 0 & Iterations: 6 
+    #>  Common convergence error: 0 & Iterations: 5  Common convergence error: 0 & Iterations: 5 
     #> k-fold cv max. cancor 
-    #>             0.4191102 
+    #>             0.4718113 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 10
+    #>  # nonzero A: 20
     #>  # nonzero B: 5
     #>  ........................................ 
-    #>  Common convergence error: 0 & Iterations: 9  Common convergence error: 0 & Iterations: 21 
+    #>  Common convergence error: 0 & Iterations: 17  Common convergence error: 0 & Iterations: 8 
     #> k-fold cv max. cancor 
-    #>             0.1683788 
+    #>             0.4394534 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 10
+    #>  # nonzero A: 20
     #>  # nonzero B: 5
     #>  ........................................ 
-    #>  Common convergence error: 0 & Iterations: 9  Common convergence error: 0 & Iterations: 16 
+    #>  Common convergence error: 0.02012 & Iterations: 21  Common convergence error: 0.00172 & Iterations: 21 
     #> k-fold cv max. cancor 
-    #>             0.3118109 
+    #>            0.04284748 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 10
+    #>  # nonzero A: 20
     #>  # nonzero B: 5
     #>  ........................................ 
-    #>  Common convergence error: 0 & Iterations: 20  Common convergence error: 0.09223 & Iterations: 21 
+    #>  Common convergence error: 2e-05 & Iterations: 21  Common convergence error: 0.00497 & Iterations: 21 
     #> k-fold cv max. cancor 
-    #>             0.0630195 
+    #>            0.05984921 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 10
+    #>  # nonzero A: 20
     #>  # nonzero B: 5
     #>  ........................................ 
-    #>  Common convergence error: 0.01518 & Iterations: 21  Common convergence error: 0.00273 & Iterations: 21 
+    #>  Common convergence error: 0.37522 & Iterations: 21  Common convergence error: 5e-05 & Iterations: 21 
     #> k-fold cv max. cancor 
-    #>           0.007440166 
+    #>             0.1551553 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 10
+    #>  # nonzero A: 20
     #>  # nonzero B: 5
     #>  ........................................
     #> Loading required package: iterators
@@ -192,8 +192,8 @@ for (k in 1:5) {
 
     #> Empirical p-values:
     #> 0
-    #> 0.062
-    #> 0.001
-    #> 0.476
-    #> 0.969
+    #> 0
+    #> 0.649
+    #> 0.518
+    #> 0.088
     #> NULL
