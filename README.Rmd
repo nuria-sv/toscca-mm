@@ -16,15 +16,19 @@ knitr::opts_chunk$set(
 # tosccamm
 
 <!-- badges: start -->
+![Status: Finished](https://img.shields.io/badge/status-finished-brightgreen) 
+![Build Status](https://github.com/nuria-sv/toscca-mm/actions/workflows/r.yml/badge.svg) 
+![License](https://img.shields.io/github/license/nuria-sv/tosccamm)
 <!-- badges: end -->
 
-The goal of tosccamm is to ...
 
 ## Installation
+NOT READY
 
 You can install the development version of tosccamm like so:
 
 ``` r
+devtools::install_github("nuria-sv/toscca")    # dependencies
 devtools::install_github("nuria-sv/tosccamm")
 ```
 

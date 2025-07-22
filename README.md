@@ -5,15 +5,21 @@
 
 <!-- badges: start -->
 
+![Status:
+Finished](https://img.shields.io/badge/status-finished-brightgreen)
+![Build
+Status](https://github.com/nuria-sv/toscca-mm/actions/workflows/r.yml/badge.svg)
+![License](https://img.shields.io/github/license/nuria-sv/tosccamm)
 <!-- badges: end -->
 
-The goal of tosccamm is to …
-
 ## Installation
+
+NOT READY
 
 You can install the development version of tosccamm like so:
 
 ``` r
+devtools::install_github("nuria-sv/toscca")    # dependencies
 devtools::install_github("nuria-sv/tosccamm")
 ```
 
@@ -79,43 +85,43 @@ for (k in 1:5) {
 }
 #>  Common convergence error: 0 & Iterations: 5  Common convergence error: 0 & Iterations: 5 
 #> k-fold cv max. cancor 
-#>             0.4718113 
-#> 
-#>  ........................................ 
-#>  # nonzero A: 20
-#>  # nonzero B: 5
-#>  ........................................ 
-#>  Common convergence error: 0 & Iterations: 21  Common convergence error: 0 & Iterations: 10 
-#> k-fold cv max. cancor 
-#>             0.4450169 
+#>             0.6347814 
 #> 
 #>  ........................................ 
 #>  # nonzero A: 10
 #>  # nonzero B: 5
 #>  ........................................ 
-#>  Common convergence error: 0.04181 & Iterations: 21  Common convergence error: 0.02173 & Iterations: 21 
+#>  Common convergence error: 0 & Iterations: 14  Common convergence error: 0.00814 & Iterations: 21 
 #> k-fold cv max. cancor 
-#>             0.3632964 
+#>             0.4786131 
 #> 
 #>  ........................................ 
-#>  # nonzero A: 5
+#>  # nonzero A: 15
 #>  # nonzero B: 50
 #>  ........................................ 
-#>  Common convergence error: 0.0515 & Iterations: 21  Common convergence error: 0.04285 & Iterations: 21 
+#>  Common convergence error: 0.0432 & Iterations: 21  Common convergence error: 0.06226 & Iterations: 21 
 #> k-fold cv max. cancor 
-#>             0.4227209 
+#>             0.2137972 
 #> 
 #>  ........................................ 
 #>  # nonzero A: 45
-#>  # nonzero B: 28
+#>  # nonzero B: 50
 #>  ........................................ 
-#>  Common convergence error: 0.02489 & Iterations: 21  Common convergence error: 0.03177 & Iterations: 21 
+#>  Common convergence error: 0.02561 & Iterations: 21  Common convergence error: 0.0193 & Iterations: 21 
 #> k-fold cv max. cancor 
-#>             0.2651134 
+#>             0.2098927 
 #> 
 #>  ........................................ 
 #>  # nonzero A: 30
-#>  # nonzero B: 50
+#>  # nonzero B: 16
+#>  ........................................ 
+#>  Common convergence error: 0.01477 & Iterations: 21  Common convergence error: 0.04615 & Iterations: 21 
+#> k-fold cv max. cancor 
+#>             0.2233089 
+#> 
+#>  ........................................ 
+#>  # nonzero A: 40
+#>  # nonzero B: 39
 #>  ........................................
 ```
 
@@ -137,42 +143,42 @@ for (k in 1:5) {
 
     #>  Common convergence error: 0 & Iterations: 5  Common convergence error: 0 & Iterations: 5 
     #> k-fold cv max. cancor 
-    #>             0.4718113 
+    #>             0.6347814 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 20
+    #>  # nonzero A: 10
     #>  # nonzero B: 5
     #>  ........................................ 
-    #>  Common convergence error: 0 & Iterations: 17  Common convergence error: 0 & Iterations: 8 
+    #>  Common convergence error: 0 & Iterations: 8  Common convergence error: 0 & Iterations: 11 
     #> k-fold cv max. cancor 
-    #>             0.4394534 
+    #>              0.431531 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 20
+    #>  # nonzero A: 10
     #>  # nonzero B: 5
     #>  ........................................ 
-    #>  Common convergence error: 0.02012 & Iterations: 21  Common convergence error: 0.00172 & Iterations: 21 
+    #>  Common convergence error: 0.00695 & Iterations: 21  Common convergence error: 0.09078 & Iterations: 21 
     #> k-fold cv max. cancor 
-    #>            0.04284748 
+    #>            0.08403192 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 20
+    #>  # nonzero A: 10
     #>  # nonzero B: 5
     #>  ........................................ 
-    #>  Common convergence error: 2e-05 & Iterations: 21  Common convergence error: 0.00497 & Iterations: 21 
+    #>  Common convergence error: 1e-05 & Iterations: 21  Common convergence error: 0.1628 & Iterations: 21 
     #> k-fold cv max. cancor 
-    #>            0.05984921 
+    #>             0.1082644 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 20
+    #>  # nonzero A: 10
     #>  # nonzero B: 5
     #>  ........................................ 
-    #>  Common convergence error: 0.37522 & Iterations: 21  Common convergence error: 5e-05 & Iterations: 21 
+    #>  Common convergence error: 0.2184 & Iterations: 21  Common convergence error: 2e-05 & Iterations: 21 
     #> k-fold cv max. cancor 
-    #>             0.1551553 
+    #>            0.07707604 
     #> 
     #>  ........................................ 
-    #>  # nonzero A: 20
+    #>  # nonzero A: 10
     #>  # nonzero B: 5
     #>  ........................................
     #> Loading required package: iterators
@@ -193,7 +199,7 @@ for (k in 1:5) {
     #> Empirical p-values:
     #> 0
     #> 0
-    #> 0.649
-    #> 0.518
-    #> 0.088
+    #> 0.34
+    #> 0.213
+    #> 0.395
     #> NULL
