@@ -1,10 +1,11 @@
 # toscca-mm core
+
 tosccamm.core = function(alphaInit, A, B, nonzero_a, nonzero_b, iter = 20, tol = 10^(-6), silent = FALSE, model = c("arima", "lme"), arformula = c(1,0,0), lmeformula = " ~ -1 + time + (1|id)")
 {
-  list.of.packages <- c("lme4", "forecast")
-  new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
-  if(length(new.packages)) install.packages(new.packages)
-  lapply(list.of.packages, library, character.only = TRUE)
+  # list.of.packages <- c("lme4", "forecast")
+  # new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+  # if(length(new.packages)) install.packages(new.packages)
+  # lapply(list.of.packages, library, character.only = TRUE)
 
 
   # checks
@@ -66,14 +67,14 @@ tosccamm.core = function(alphaInit, A, B, nonzero_a, nonzero_b, iter = 20, tol =
 
       if(is.null(arformula)){
         for(n in unique(id_a)){
-          me[[n]] = auto.arima(gamma[n == id_a],max.p = 5,max.q = 5,max.P = 5,max.Q = 5,max.d = 3,seasonal = FALSE,ic = 'aicc')
-          pred_me[which(id_b ==n)] = as.numeric(forecast(me[[n]], h = length(time_b[which(id_b == n)]))$fitted)
+          me[[n]] = forecast::auto.arima(gamma[n == id_a],max.p = 5,max.q = 5,max.P = 5,max.Q = 5,max.d = 3,seasonal = FALSE,ic = 'aicc')
+          pred_me[which(id_b ==n)] = as.numeric(forecast::forecast(me[[n]], h = length(time_b[which(id_b == n)]))$fitted)
 
         }
       } else {
         for(n in unique(id_a)){
-          me[[n]] = arima(gamma[n == id_a], order = arformula, method = "ML")
-          pred_me[which(id_b ==n)] = as.numeric(predict(me[[n]], n.ahead = length(time_b[which(id_b == n)]))$pred)
+          me[[n]] = stats::arima(gamma[n == id_a], order = arformula, method = "ML")
+          pred_me[which(id_b ==n)] = as.numeric(stats::predict(me[[n]], n.ahead = length(time_b[which(id_b == n)]))$pred)
 
         }
       }
@@ -84,8 +85,8 @@ tosccamm.core = function(alphaInit, A, B, nonzero_a, nonzero_b, iter = 20, tol =
     }
 
     if(model == "lme") {
-      me = sapply(1:ncol(alpha), function(j) lmer(as.formula(paste("gamma", lmeformula)), data = data.frame(gamma = gamma[,j], time = time_a, id = id_a), REML = TRUE))
-      pred_me = sapply(1:ncol(alpha), function(j) predict(me[[j]], newdata = data.frame(time = time_b, id = id_b), allow.new.levels = TRUE, re.form = NULL))
+      me = sapply(1:ncol(alpha), function(j) lme4::lmer(as.formula(paste("gamma", lmeformula)), data = data.frame(gamma = gamma[,j], time = time_a, id = id_a), REML = TRUE))
+      pred_me = sapply(1:ncol(alpha), function(j) stats::predict(me[[j]], newdata = data.frame(time = time_b, id = id_b), allow.new.levels = TRUE, re.form = NULL))
 
     }
 
@@ -118,14 +119,14 @@ tosccamm.core = function(alphaInit, A, B, nonzero_a, nonzero_b, iter = 20, tol =
 
       if(is.null(arformula)){
         for(n in unique(id_b)){
-          me[[n]] = auto.arima(zeta[n == id_b],max.p = 5,max.q = 5,max.P = 5,max.Q = 5,max.d = 3,seasonal = FALSE,ic = 'aicc')
-          pred_me[which(id_a ==n)] = as.numeric(forecast(me[[n]], h = length(time_a[which(id_a == n)]))$fitted)
+          me[[n]] = forecast::auto.arima(zeta[n == id_b],max.p = 5,max.q = 5,max.P = 5,max.Q = 5,max.d = 3,seasonal = FALSE,ic = 'aicc')
+          pred_me[which(id_a ==n)] = as.numeric(forecast::forecast(me[[n]], h = length(time_a[which(id_a == n)]))$fitted)
 
         }
       } else {
         for(n in unique(id_b)){
-          me[[n]] = arima(zeta[n == id_b], order = arformula, method = "ML")
-          pred_me[which(id_a ==n)] = as.numeric(predict(me[[n]], n.ahead = length(time_a[which(id_a == n)]))$pred)
+          me[[n]] = stats::arima(zeta[n == id_b], order = arformula, method = "ML")
+          pred_me[which(id_a ==n)] = as.numeric(stats::predict(me[[n]], n.ahead = length(time_a[which(id_a == n)]))$pred)
 
         }
       }
@@ -136,8 +137,8 @@ tosccamm.core = function(alphaInit, A, B, nonzero_a, nonzero_b, iter = 20, tol =
     }
 
     if(model == "lme") {
-      me = sapply(1:ncol(beta), function(j) lmer(as.formula(paste("zeta", lmeformula)), data = data.frame(zeta = zeta[,j], time = time_b, id = id_b), REML = TRUE))
-      pred_me = sapply(1:ncol(beta), function(j) predict(me[[j]], newdata = data.frame(time = time_a, id = id_a), allow.new.levels = TRUE, re.form = NULL))
+      me = sapply(1:ncol(beta), function(j) lme4::lmer(as.formula(paste("zeta", lmeformula)), data = data.frame(zeta = zeta[,j], time = time_b, id = id_b), REML = TRUE))
+      pred_me = sapply(1:ncol(beta), function(j) stats::predict(me[[j]], newdata = data.frame(time = time_a, id = id_a), allow.new.levels = TRUE, re.form = NULL))
 
     }
     alpha = t(A) %*% pred_me
@@ -164,10 +165,10 @@ tosccamm.core = function(alphaInit, A, B, nonzero_a, nonzero_b, iter = 20, tol =
   }
 
   if(model == "lme") {
-    me_x = sapply(1:ncol(alpha), function(j) lmer(as.formula(paste("gamma", lmeformula)), data = data.frame(gamma = gamma[,j], time = time_a, id = id_a), REML = TRUE))
+    me_x = sapply(1:ncol(alpha), function(j) lme4::lmer(as.formula(paste("gamma", lmeformula)), data = data.frame(gamma = gamma[,j], time = time_a, id = id_a), REML = TRUE))
     # pred_x = sapply(1:ncol(alpha), function(j) predict(me_x[[j]], newdata = data.frame(time = time_b, id = id_b), allow.new.levels = TRUE, re.form = NULL))
     # lmer(as.formula(paste("gamma", lmeformula)), data = data.frame(gamma = gamma, time = time_a, id = id_a), REML = TRUE)
-    me_y = sapply(1:ncol(beta), function(j) lmer(as.formula(paste("zeta", lmeformula)), data = data.frame(zeta = zeta[,j], time = time_b, id = id_b), REML = TRUE))
+    me_y = sapply(1:ncol(beta), function(j) lme4::lmer(as.formula(paste("zeta", lmeformula)), data = data.frame(zeta = zeta[,j], time = time_b, id = id_b), REML = TRUE))
     # pred_y = sapply(1:ncol(beta), function(j) predict(me_y[[j]], newdata = data.frame(time = time_a, id = id_a), allow.new.levels = TRUE, re.form = NULL))
     # me_y = lmer(as.formula(paste("zeta", lmeformula)), data = data.frame(zeta = zeta, time = time_b, id = id_b), REML = TRUE)
   } else {
@@ -175,5 +176,7 @@ tosccamm.core = function(alphaInit, A, B, nonzero_a, nonzero_b, iter = 20, tol =
     me_y = NULL
   }
 
+  # alpha[alpha!=0] = scale(alpha[alpha!=0])
+  # beta[beta!=0]   = scale(beta[beta!=0])
   return(list(a = alpha, b = beta, conv = e, iter = i, me_x = me_x, me_y = me_y))
 }

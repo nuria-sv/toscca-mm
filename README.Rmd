@@ -16,21 +16,25 @@ knitr::opts_chunk$set(
 # tosccamm
 
 <!-- badges: start -->
+![Status: Finished](https://img.shields.io/badge/status-finished-brightgreen) 
+![Build Status](https://github.com/nuria-sv/toscca-mm/actions/workflows/r.yml/badge.svg) 
+![License](https://img.shields.io/github/license/nuria-sv/tosccamm)
 <!-- badges: end -->
 
-The goal of tosccamm is to ...
 
 ## Installation
+NOT READY
 
 You can install the development version of tosccamm like so:
 
 ``` r
-devtools::install_github("nuria-sv/toscamm")
+devtools::install_github("nuria-sv/toscca")    # dependencies
+devtools::install_github("nuria-sv/tosccamm")
 ```
 
 ## TOSCCA-MM
 
-<img src="vignettes/tosccamm_tikz.png" height="350" width="700" align="center">
+<img src="diagram/tosccamm_tikz.png" height="350" width="700" align="center">
 
 
 TOSCCA-MM is a novel extension of sparse CCA that incorporates time dynamics at 
@@ -53,65 +57,70 @@ Furthermore, modelling time in the latent space significantly reduces computatio
 This is a basic example over simulated data of TOSCCA-MM
 
 ```{r load}
-library(tosccamm)
-
+# library(tosccamm)
+source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccam_permut.R")
+source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccamm_core.R")
+source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccamm_folds.R")
+source("C:/Users/PC/OneDrive/github/tosccamm/R/toscca_helpers.R")
+source("C:/Users/PC/OneDrive/github/tosccamm/R/general_functions.R")
 # for plots
 library(grid)
 library(ggplot2)
 library(gridExtra)
+library(viridis)
 ```
 
 ```{r simulate data, include=FALSE}
 n = 100
 
 #This can be varied to simulate different signals
-alpha1 = c(rep(0.5,10), rep(0, 990))
-beta1 = c(rep(0.5,5), rep(0, 195))
-alpha2 = c(rep(0, 990), rep(0.5,10))
+# alpha1 = c(runif(10, 0.5, 1), rep(0, 990))
+# beta1 = c(runif(5, 0.5, 1), rep(0, 195))
+# alpha2 = c(rep(0, 990), runif(10, 0.5, 1))
+# beta2 = c(rep(0, 195),runif(5, 0.5, 1))
+
+
 beta2 = c(rep(0, 195), rep(0.5,5))
+alpha2 = c(rep(0, 990), rep(0.5,10))
+beta1 = c(rep(0.5,5), rep(0, 195))
+alpha1 = c(rep(0.5,10), rep(0, 990))
 
 X1 = list()
 X2 = list()
 
 i = 1
 K = 3
-sg = matrix(c(1, 0.6, 0.3, rep(0, 7), 0.6, 1, 0.6, 0.3, 
-              rep(0, 6), 0.3, 0.6, 1, 0.6, 0.3, 
-              rep(0,5), 0, 0.3, 0.6, 1, 0.6, 0.3, 
-              rep(0, 4), rep(0, 2), 0.3, 0.6, 1, 0.6, 0.3, 
-              rep(0,3), rep(0,3), 0.3, 0.6, 1, 0.6, 0.3, rep(0, 2), 
-              rep(0, 4), 0.3, 0.6, 1, 0.6, 0.3, 0, 
-              rep(0, 5), 0.3, 0.6, 1, 0.6, 0.3, rep(0,6), 0.3, 0.6, 1, 0.6, 
-              rep(0,7), 0.3, 0.6, 1), ncol = 10)
-
+sg = matrix(c(1, 0.6, 0.3, rep(0, 7), 0.6, 1, 0.6, 0.3,
+rep(0, 6), 0.3, 0.6, 1, 0.6, 0.3,
+rep(0,5), 0, 0.3, 0.6, 1, 0.6, 0.3,
+rep(0, 4), rep(0, 2), 0.3, 0.6, 1, 0.6, 0.3,
+rep(0,3), rep(0,3), 0.3, 0.6, 1, 0.6, 0.3, rep(0, 2),
+rep(0, 4), 0.3, 0.6, 1, 0.6, 0.3, 0,
+rep(0, 5), 0.3, 0.6, 1, 0.6, 0.3, rep(0,6), 0.3, 0.6, 1, 0.6,
+rep(0,7), 0.3, 0.6, 1), ncol = 10)
 for(i in 1:n)
 {
-  print(i)
-  #Simulate  times of measurement
-  times = 1:10
-
-  #random effect
-  ui = rnorm(1,0,0.25)
-
-  #Shared canonical vector (with some time effect)
-  Zi1 = -(1+times/max(times))^3 + times * 0.5 + ui
-  Zi2 = (sin(100*times))^times +   times * 0.65 +rnorm(1,0,0.6)
-
-  Zi = cbind(Zi1, Zi2)
-  alpha = cbind(alpha1, alpha2)
-  beta = cbind(beta1, beta2)
-
-  #Simulate data and add some noise
-  X1i = sapply(1:nrow(alpha), function(a) MASS::mvrnorm(1, (Zi %*% t(alpha))[,a], Sigma = sg))
-  X2i = sapply(1:nrow(beta), function(a) MASS::mvrnorm(1, (Zi %*% t(beta))[,a], Sigma = sg))
-  # X1i = sapply(alpha1, function(a) rnorm(length(times), Zi1 * a, 0.5))
-  # X2i = sapply(beta1, function(a) rnorm(length(times), Zi1 * a, 0.5))
-  # X1i = sapply(alpha2, function(a) rnorm(length(times), Zi2 * a, 0.5))
-  # X2i = sapply(beta2, function(a) rnorm(length(times), Zi2 * a, 0.5))
-  colnames(X1i) = paste0("X", 1:ncol(X1i))
-  colnames(X2i) = paste0("Y", 1:ncol(X2i))
-
-  #Check the simulated cross correlation
+print(i)
+#Simulate  times of measurement
+times = 1:10
+#random effect
+ui = rnorm(1,0,0.7)
+#Shared canonical vector (with some time effect)
+Zi1 = -(1+times/max(times))^3 + times * 0.5 + ui
+Zi2 = (sin(100*times))^times +   times * 0.65 +rnorm(1,0,0.75)
+Zi = cbind(Zi1, Zi2)
+alpha = cbind(alpha1, alpha2)
+beta = cbind(beta1, beta2)
+#Simulate data and add some noise
+X1i = sapply(1:nrow(alpha), function(a) MASS::mvrnorm(1, (Zi %*% t(alpha))[,a], Sigma = sg))
+X2i = sapply(1:nrow(beta), function(a) MASS::mvrnorm(1, (Zi %*% t(beta))[,a], Sigma = sg))
+# X1i = sapply(alpha1, function(a) rnorm(length(times), Zi1 * a, 0.5))
+# X2i = sapply(beta1, function(a) rnorm(length(times), Zi1 * a, 0.5))
+# X1i = sapply(alpha2, function(a) rnorm(length(times), Zi2 * a, 0.5))
+# X2i = sapply(beta2, function(a) rnorm(length(times), Zi2 * a, 0.5))
+colnames(X1i) = paste0("X", 1:ncol(X1i))
+colnames(X2i) = paste0("Y", 1:ncol(X2i))
+#Check the simulated cross correlation
   #image(cor(X1i, X2i))
 
   #Remove some observations
@@ -131,8 +140,8 @@ dev.new(); image(cor(X1,X2))
 
 verwijder_X = sample(1:nrow(X1), 0.2*nrow(X1), replace=FALSE)
 verwijder_Y = sample(1:nrow(X2), 0.3*nrow(X2), replace=FALSE)
-table(verwijder_X)
-table(verwijder_Y)
+# table(verwijder_X)
+# table(verwijder_Y)
 X1=X1[-verwijder_X,]
 X2=X2[-verwijder_Y,]
 # XX2 = scale_rm(data.frame(X1), centre = T); YY2 = scale_rm(data.frame(X2), centre = T)
@@ -143,12 +152,12 @@ nonz_b = round(seq(50, 5, length.out = 5)) # seq(100, 1000, 100)
 
 
 Estimate the canonical weights and latent paths for $K$ components.
-```{r estimate tosccamm}
+```{r estimatetosccamm}
 res_k = list()
 
 X.temp = XX2
 Y.temp = YY2
-for (k in 1:K) {
+for (k in 1:5) {
   if(k > 1) {
     # residualise for subsequent components
     X.temp = data.frame(X.temp[,c(1,2)],toscca::residualisation(as.matrix(X.temp[,-c(1,2)]), res_k[[k-1]]$alpha, type = "basic") )
@@ -174,14 +183,14 @@ lv1 = data.frame(id = XX2$id, time = XX2$time, K1=as.matrix(XX2[,-c(1,2)])%*% (r
 lv2 = data.frame(id = XX2$id, time = XX2$time, K2=as.matrix(XX2[,-c(1,2)])%*% (res_k[[2]]$alpha))
 lv3 = data.frame(id = XX2$id, time = XX2$time, K3=as.matrix(XX2[,-c(1,2)])%*% (res_k[[3]]$alpha))
 
-shed_blue_60 <- "#6864fc"
+shed_blue_60 <- viridis::magma(5)[4] #"#6864fc"
 
 # Update plot1 (no x-axis label)
 plot1 <- ggplot(lv1, aes(x = time, y = scale(K1), group = id)) +
   geom_line(alpha = 0.1, aes(color = "Estimated", linetype = "Estimated", linewidth = "Estimated")) +  # Estimated (black)
   geom_line(data = data.frame(time = sort(unique(lv1$time)), z = scale(Zi2)), aes(x = time, y = scale(z), color = "True", group = 1, , linetype = "True", linewidth = "True")) +  # True (red)
   geom_line(data = data.frame(time = sort(unique(lv1$time)), K1 = aggregate(lv1, by = list(lv1$time), FUN = mean)$K1), aes(x = time, y = scale(K1), group = 1, color = "Smoothed", linetype = "Smoothed", linewidth = "Smoothed")) +  # Smoothed (blue)
-  scale_color_manual(values = c("Estimated" = "black", "True" = "red", "Smoothed" = shed_blue_60)) +  # Specify color manually
+  scale_color_manual(values = c("Estimated" = "black", "True" = viridis::magma(5)[3], "Smoothed" = shed_blue_60)) +  # Specify color manually
   scale_linewidth_manual(values =c("Estimated" = 0.8, "True" = 1.5, "Smoothed" = 1.5)) +
   scale_linetype_manual(values = c("Estimated" = 3, "True" = 1, "Smoothed" = 2)) +  # Specify line types
   scale_x_continuous(breaks = unique(lv1$time)) +  # Ensure x-axis is integers
@@ -201,7 +210,7 @@ plot2 <- ggplot(lv2, aes(x = time, y = scale(K2), group = id)) +
   geom_line(data = data.frame(time = sort(unique(lv2$time)), z = scale(Zi1)), aes(x = time, y = scale(z), color = "True", group = 1, linetype = "True", linewidth = "True")) +  # True (red)
   geom_line(data = data.frame(time = sort(unique(lv2$time)), K2 = aggregate(lv2, by = list(lv2$time), FUN = mean)$K2), aes(x = time, y = scale(K2), group = 1, color = "Smoothed", linetype = "Smoothed", linewidth = "Smoothed")) +  # Smoothed (blue)
   # geom_smooth(data = lv2, aes(x = time, y = scale(K2), group = 1, color = "Smoothed", linetype = "Smoothed", linewidth = "Smoothed"), se = FALSE) +  # Smoothed (blue)
-  scale_color_manual(values = c("Estimated" = "black", "True" = "red", "Smoothed" = shed_blue_60)) +  # Specify color manually
+  scale_color_manual(values = c("Estimated" = "black", "True" = viridis::magma(5)[3], "Smoothed" = shed_blue_60)) +  # Specify color manually
   scale_linewidth_manual(values =c("Estimated" = 0.8, "True" = 1.5, "Smoothed" = 1.5)) +
   scale_linetype_manual(values = c("Estimated" = 3, "True" = 1, "Smoothed" = 2)) +  # Specify line types
   scale_x_continuous(breaks = unique(lv2$time)) +  # Ensure x-axis is integers
@@ -217,9 +226,9 @@ plot2 <- ggplot(lv2, aes(x = time, y = scale(K2), group = id)) +
   )
 plot3 <- ggplot(lv3, aes(x = time, y = scale(K3), group = id)) +
   geom_line(alpha = 0.1, aes(color = "Estimated", linetype = "Estimated", linewidth = "Estimated")) +  # Estimated (black)
-  geom_hline(yintercept =0, color = "red", linetype = 1, linewidth = 1.5) +
+  geom_hline(yintercept =0, color = viridis::magma(5)[3], linetype = 1, linewidth = 1.5) +
   geom_smooth(data = lv3, aes(x = time, y = scale(K3), group = 1, color = "Smoothed", linetype = "Smoothed", linewidth = "Smoothed"), se = FALSE) +  # Smoothed (blue)
-  scale_color_manual(values = c("Estimated" = "black", "True" = "red", "Smoothed" = shed_blue_60)) +  # Specify color manually
+  scale_color_manual(values = c("Estimated" = "black", "True" = viridis::magma(5)[3], "Smoothed" = shed_blue_60)) +  # Specify color manually
   scale_linewidth_manual(values =c("Estimated" = 0.8, "True" = 1.5, "Smoothed" = 1.5)) +
   scale_linetype_manual(values = c("Estimated" = 3, "True" = 1, "Smoothed" = 2)) +  # Specify line types
   scale_x_continuous(breaks = unique(lv3$time)) +  # Ensure x-axis is integers
@@ -239,7 +248,7 @@ shared_legend <- ggplot(lv1, aes(x = 1, y = 0, group = id)) +
   geom_line(aes(color = "Estimated", linetype = "Estimated", linewidth = "Estimated")) +
   geom_line(aes(color = "True", , linetype = "True", linewidth = "True")) +
   geom_line(aes(color = "Mean", linetype = "Mean", linewidth = "Mean")) +
-  scale_color_manual(values = c("Estimated" = "black", "True" = "red", "Mean" = shed_blue_60)) +
+  scale_color_manual(values = c("Estimated" = "black", "True" = viridis::magma(5)[3], "Mean" = shed_blue_60)) +
   scale_linewidth_manual(values =c("Estimated" = 1, "True" = 1, "Mean" = 1)) +
   scale_linetype_manual(values = c("Estimated" = 3, "True" = 1, "Mean" = 2)) +  # Specify line types
   labs(color = "Legend", linetype = "Legend", linewidth ="Legend") +theme_void() +
@@ -249,7 +258,7 @@ shared_legend <- ggplot(lv1, aes(x = 1, y = 0, group = id)) +
 grid.arrange(
   gridExtra::arrangeGrob(
     plot1,
-    plot2,
+    plot2, plot3, 
     ncol = 2  # Stack plot1 and plot2 vertically
   ),
   shared_legend,
@@ -265,6 +274,7 @@ axisSize = 15
 W_col1 <-res_k[[1]]$alpha[,1]
 W_col1[W_col1!=0] <-scale(res_k[[1]]$alpha[W_col1!=0], center = F)
 
+shed_blue_60 = viridis::magma(5)[4]
 # Create a data frame for plotting
 df <- data.frame(
   Index = 1:length(W_col1),
@@ -404,7 +414,7 @@ df <- data.frame(
 
 plotTrue_alpha1 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = "red")) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = viridis::magma(5)[3])) +  # Define colors
   labs(x = "", y = "", title = expression(w[x][2])) +
   scale_x_continuous(breaks = c(10, 500, 1000)) +  # Set fewer x-axis ticks
   theme_minimal() +
@@ -424,7 +434,7 @@ df <- data.frame(
 
 plotTrue_alpha2 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = "red")) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = viridis::magma(5)[3])) +  # Define colors
   labs(x = "", y = "True", title = expression(w[x][1])) +
   scale_x_continuous(breaks = c(10, 500, 1000)) +  # Set fewer x-axis ticks
   theme_minimal() +
@@ -444,7 +454,7 @@ df <- data.frame(
 
 plotTrue_beta1 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = "red")) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = viridis::magma(5)[3])) +  # Define colors
   labs(x = "", y = "", title = expression(w[y][2])) +
   scale_x_continuous(breaks = c(10, 100, 200)) +  # Set fewer x-axis ticks
   theme_minimal() +
@@ -464,7 +474,7 @@ df <- data.frame(
 
 plotTrue_beta2 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = "red")) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = viridis::magma(5)[3])) +  # Define colors
   labs(x = "", y = "", title = expression(w[y][1])) +
   scale_x_continuous(breaks = c(10, 100, 200)) +  # Set fewer x-axis ticks
   theme_minimal() +
@@ -496,7 +506,7 @@ grid.arrange(
 
 #### Latent path and canonical weights for $k=3$, noise
 
-```{r plot noise, echo=FALSE, warning=FALSE, message=FALSE}
+```{r plotNoise, echo=FALSE, warning=FALSE, message=FALSE}
 grid.arrange(
   gridExtra::arrangeGrob(
     plot_alpha3, plot_beta3,
@@ -510,4 +520,47 @@ grid.arrange(
   heights = c(4, 4)  # Adjust the height ratio between the plots and the legend
 )
 ```
+
+
+```{r gridPlots, echo=FALSE}
+for (k in 1:K) {
+    x.k = res_k[[k]]
+    plt = myHeatmap(x.k$canCor_grid, show_labels = T, K, palette)
+    plt = plt  + ggtitle("cc w.r.t. sparsity levels") + theme(plot.title = element_text(size = 16, face = "bold", color = "black",
+                                                                                        hjust = 0.5, vjust = 1.5,
+                                                                                        lineheight = 1.2))
+    print(plt)
+    }
+
+```
+
+```{r permutationTesting, echo=F}
+res_k = list()
+
+X.temp = XX2
+Y.temp = YY2
+for (k in 1:5) {
+  if(k > 1) {
+    # residualise for subsequent components
+    X.temp = data.frame(X.temp[,c(1,2)],toscca::residualisation(as.matrix(X.temp[,-c(1,2)]), res_k[[k-1]]$alpha, type = "basic") )
+    Y.temp = data.frame(Y.temp[,c(1,2)],toscca::residualisation(as.matrix(Y.temp[,-c(1,2)]), res_k[[k-1]]$beta, type = "basic") )
+
+    nonz_a = as.numeric(table(res_k[[k-1]]$alpha != 0)[2])
+    nonz_b = as.numeric(table(res_k[[k-1]]$beta != 0)[2])
+  }
+
+  res_k[[k]] <- tosccamm(X.temp, Y.temp, folds = 2,
+                                            nonzero_a = nonz_a, nonzero_b = nonz_b,
+                                            model = "lme", lmeformula = " ~ 0 + poly(time,3) + (1|id)")
+
+}
+K = length(res_k)
+perm_cc = toscamm.perm(XX2, YY2, nonzero_a = sapply(1:K, function(k)res_k[[k]]$nonzero_a), nonzero_b = sapply(1:K, function(k)res_k[[k]]$nonzero_b), K, alpha_init = "uniform", folds = 1, toPlot = T, draws = 1000, model = "lme", 
+                       lmeformula = " ~ 0 + poly(time,3) + (1|id)",
+                           cancor=sapply(1:K, function(k)res_k[[k]]$cancor), bootCCA = NULL, silent = TRUE, parallel_logic = TRUE,
+                         nuisanceVar = 0, testStatType = "CC")
+
+```
+
+
 

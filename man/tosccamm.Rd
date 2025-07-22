@@ -12,7 +12,6 @@ tosccamm(
   folds = 1,
   parallel_logic = FALSE,
   silent = FALSE,
-  toPlot = TRUE,
   ATest_res = NULL,
   BTest_res = NULL,
   model = "lme",
@@ -35,17 +34,15 @@ tosccamm(
 
 \item{silent}{Logical. TRUE to keep silent output messages. Default is FALSE.}
 
-\item{toPlot}{Logical. TRUE to plot estimated canonical vectors. Default is FALSE.}
-
 \item{ATest_res}{NULL. Keep NULL.}
 
 \item{BTest_res}{NULL. Keep NULL.}
 
 \item{model}{Character. c("lme", "ar"). Model to fit longitudinal latent space.}
 
-\item{arformula}{Numeric vector. Choice of ARIMA. Default is c(1,0,0).}
+\item{lmeformula}{Character. LME formula. Default is " ~ -1 + time + (1|id)".}
 
-\item{lmeforemula}{Character. LME formula. Default is " ~ -1 + time + (1|id)".}
+\item{arformula}{Numeric vector. Choice of ARIMA. Default is c(1,0,0).}
 }
 \value{
 Canonical vectors for k components.
