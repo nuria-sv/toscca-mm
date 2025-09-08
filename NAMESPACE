@@ -2,5 +2,6 @@
 
 export(getWhich)
 export(myHeatmap)
+export(plt.selstab)
 export(scale_rm)
 export(tosccamm)

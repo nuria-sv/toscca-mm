@@ -4,14 +4,32 @@
 \alias{myHeatmap}
 \title{Plot heatmap of cv w.r.t. the penalty parameter perfotmance.}
 \usage{
-myHeatmap(mat, palette = "Teal", coln = 12, xlab = "", ylab = "", axes = FALSE)
+myHeatmap(
+  mat,
+  palette_values = tosccamm:::mpalette,
+  blue = NULL,
+  xlab = "",
+  ylab = "",
+  show_axes = TRUE,
+  show_labels = TRUE,
+  K = NULL
+)
 }
 \arguments{
 \item{mat}{A matrix.}
 
-\item{palette}{Character. Name of a palette for the heatmap. Default is "Teal".}
+\item{palette_values}{Character string. Vector of olour values for the heatmap. Default is package's palette.}
+
+\item{xlab}{Character. Label for x axis.}
+
+\item{ylab}{Character. Label for y axis.}
+
+\item{show_axes}{Logic. Default is True.}
+
+\item{show_labels}{Logic. Default is True.}
+
+\item{K}{Numeric. Number of components.}
 }
 \description{
-This function stardadises matrices with multiple measurements
-w.r.t. a chosen origin.
+This function plots cca for different thresholds
 }
