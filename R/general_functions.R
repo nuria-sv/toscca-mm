@@ -102,73 +102,116 @@ cpev.toscca = function (mat, weights) {
 #' This function plots cca for different thresholds
 #'
 #' @param mat A matrix.
-#' @param palette Character. Name of a palette for the heatmap. Default is "Teal".
+#' @param palette_values Character string. Vector of olour values for the heatmap. Default is package's palette.
 #' @param xlab Character. Label for x axis.
 #' @param ylab Character. Label for y axis.
 #' @param show_axes Logic. Default is True.
 #' @param show_labels Logic. Default is True.
 #' @param K Numeric. Number of components.
+#' @param blue Logical. If TRUE, use only scale of blues from palette.
 #' @export
-myHeatmap <- function(mat, palette = "rocket", xlab = "", ylab = "",
-                      show_axes = TRUE, show_labels = TRUE, K = 1) {
-  if (!is.matrix(mat)) {
-    stop("input 'mat' must be a matrix.")
-  }
+myHeatmap <- function(mat, palette_values = mpalette, blue = NULL, xlab = "", ylab = "",
+                      show_axes = TRUE, show_labels = TRUE, K = NULL) {
 
-  # colors <- viridis::viridis(100, option = palette, direction = -1)
-  #
-  # layout(matrix(c(1,2), ncol = 2), widths = c(4, 1))
-  #
-  # par(mar = c(5, 4, 4, 2))
-  # image(1:nrow(mat), 1:ncol(mat), (mat[nrow(mat):1,ncol(mat):1 ]),
-  #       col = colors, axes = FALSE, xlab = xlab, ylab = ylab)
-  #
-  # if (show_axes) {
-  #   axis(2, at = 1:ncol(mat), labels = rev(colnames(mat)), las = 1)
-  #   axis(1, at = 1:nrow(mat), labels = rev(rownames(mat)), las = 2)
-  # }
-  #
-  # par(mar = c(5, 2, 4, 4))
-  # image(
-  #   matrix(seq(0,1, length.out = length(mat)), nrow = 1),
-  #   col = colors, axes = FALSE)
-  # axis(4, at = seq(0, 1, length.out = length(mat)) , labels = round(seq(min(mat), max(mat), length.out = length(mat)), 2), las = 2, tick = T, pos =1)
+  if(is.null(palette_values) | all(palette_values %in% mpalette)) blue = TRUE
+  bor = 1:length(palette_values)
+  if(isTRUE(blue)) bor = (length(palette_values)/2):1
+  if(isFALSE(blue)) bor = (length(palette_values)/2):(length(palette_values))
 
-  mat_df <- as.data.frame(as.table(mat[nrow(mat):1, ncol(mat):1]))
-  colnames(mat_df) <- c("X", "Y", "value")
+  K = ifelse(is.matrix(mat), 1, ifelse(is.null(K), length(mat), K))
+  X <- Y <- value <- NULL
 
-  # Create ggplot heatmap
-  plt <- ggplot2::ggplot(mat_df, ggplot2::aes(X, Y, fill = value)) +
-    ggplot2::geom_tile() +
-    viridis::scale_fill_viridis(option = palette, direction = -1, limits = c(min(mat_df$value)-0.01, max(mat_df$value)+0.01)) +
-    ggplot2::theme_minimal() +
-    ggplot2::theme(axis.text.x = if (show_labels) ggplot2::element_text(angle = 0, hjust = 1) else ggplot2::element_blank(),
-          axis.text.y = if (show_labels) ggplot2::element_text(hjust = 1) else ggplot2::element_blank(),
-          axis.title = ggplot2::element_blank(),
-          legend.position = "right") #+
+
+  if(isTRUE(K==1)) {
+    if (!is.matrix(mat)) {
+      stop("input 'mat' must be a matrix.")
+    }
+
+    # colors <- viridis::viridis(100, option = palette_values, direction = -1)
+    #
+    # layout(matrix(c(1,2), ncol = 2), widths = c(4, 1))
+    #
+    # par(mar = c(5, 4, 4, 2))
+    # image(1:nrow(mat), 1:ncol(mat), (mat[nrow(mat):1,ncol(mat):1 ]),
+    #       col = colors, axes = FALSE, xlab = xlab, ylab = ylab)
+    #
+    # if (show_axes) {
+    #   axis(2, at = 1:ncol(mat), labels = rev(colnames(mat)), las = 1)
+    #   axis(1, at = 1:nrow(mat), labels = rev(rownames(mat)), las = 2)
+    # }
+    #
+    # par(mar = c(5, 2, 4, 4))
+    # image(
+    #   matrix(seq(0,1, length.out = length(mat)), nrow = 1),
+    #   col = colors, axes = FALSE)
+    # axis(4, at = seq(0, 1, length.out = length(mat)) , labels = round(seq(min(mat), max(mat), length.out = length(mat)), 2), las = 2, tick = T, pos =1)
+
+    mat_df <- as.data.frame(as.table(mat[nrow(mat):1, ncol(mat):1]))
+    colnames(mat_df) <- c("X", "Y", "value")
+
+    cols <- grDevices::colorRampPalette(palette_values[bor])(length(unique(mat_df)))
+
+
+    # Create ggplot heatmap
+    plt <- ggplot2::ggplot(mat_df, ggplot2::aes(X, Y, fill = value)) +
+      ggplot2::geom_tile() +
+      # viridis::scale_fill_viridis(option = palette_values, direction = -1, limits = c(min(mat_df$value)-0.01, max(mat_df$value)+0.01)) +
+      ggplot2::scale_fill_gradientn(colors= cols, limits = c(min(mat_df$value) - 0.01, max(mat_df$value) + 0.01)) +
+      ggplot2::theme_minimal() +
+      ggplot2::theme(axis.text.x = if (show_labels) ggplot2::element_text(angle = 0, hjust = 1) else ggplot2::element_blank(),
+                     axis.text.y = if (show_labels) ggplot2::element_text(hjust = 1) else ggplot2::element_blank(),
+                     axis.title = ggplot2::element_blank(),
+                     legend.position = "right") #+
     # ggtitle("cc for different sparsity levels") +
     # theme(
     #     plot.title = element_text(size = 16, face = "bold", color = "black",
     #                               hjust = 0.5, vjust = 1.5, lineheight = 1.2)
     # )
 
+  } else {
+    K = ifelse(is.null(K), length(mat), K)
+    x = lapply(1:K, function(k)data.frame(as.data.frame(as.table(mat[[k]]$canCor_grid[nrow(mat[[k]]$canCor_grid):1, ncol(mat[[k]]$canCor_grid):1])), K= k))
+    mat_df = do.call("rbind", x)
+
+    colnames(mat_df) <- c("X", "Y", "value", "k=")
+    cols <- grDevices::colorRampPalette(palette_values[bor])(length(unique(mat_df)))
+
+
+    # Create ggplot heatmap
+    plt <- ggplot2::ggplot(mat_df, ggplot2::aes(X, Y, fill = value)) +
+      ggplot2::geom_tile() +
+      # viridis::scale_fill_viridis(option = palette_values, direction = -1, limits = c(min(mat_df$value)-0.01, max(mat_df$value)+0.01)) +
+      ggplot2::scale_fill_gradientn(name = "cancor", colors= cols, limits = c(min(mat_df$value) - 0.01, max(mat_df$value) + 0.01)) +
+      # ggplot2::theme_minimal() +
+      ggplot2::theme(axis.text.x = if (show_labels) ggplot2::element_text(angle = 0, hjust = 1) else ggplot2::element_blank(),
+                     axis.text.y = if (show_labels) ggplot2::element_text(hjust = 1) else ggplot2::element_blank(),
+                     axis.title = ggplot2::element_blank(),
+                     legend.position = "right") + ggplot2::facet_wrap(~`k=`, scales = "free")
+
+  }
   return(plt)
 
 }
 # create sel stability plt -----------------------------------------------------
-#' Plot slection stability for penalty parameter perfotmance.
+#' Plot slection stability for penalty parameter performance.
 #'
 #' This function plots cv for different thresholds
 #'
-#' @param mat A matrix of canonical correlation for different sparsity levels.
+#' @param object A toscca object.
 #' @param X nxp matrix. Observation matrix.
 #' @param Y A nxq matrix. Observation matrix.
-#' @param palette Character. Name of a palette for the heatmap. Default is "Teal".
+#' @param palette_values Character. Name of a palette for the heatmap. Default is "Teal".
 #' @param mm Logic. Indicates whether there are multiple measurements or not. Default is True.
+#' @param blue Logical. If TRUE, use only scale of blues from palette.
+#' @param k Numeric. Component, default k =1.
 #' @export
 plt.selstab=
-  function (mat, X, Y, palette = "magma", mm = T)
+  function (object, X, Y, palette_values = mpalette, blue = T, mm = T, k=1)
   {
+    index <- count <- NULL
+    if(!is.null(object$alpha)) mat = object$canCor_grid
+    if(is.null(object$alpha)) mat = object[[k]]$canCor_grid
+
     nonz_x = sort(as.numeric(rownames(mat)))
     nonz_y = sort(as.numeric(colnames(mat)))
 
@@ -185,6 +228,8 @@ plt.selstab=
 
     } else {
       run_cca <- function(i) {
+        if (!requireNamespace("toscca", quietly = TRUE))
+          devtools::install_github("nuria-sv/toscca")
         cca_res = toscca::toscca(
           X, Y,
           nonz_x[i],
@@ -211,7 +256,7 @@ plt.selstab=
     count_alpha_df$count <- rowSums(count_alpha_df)
 
 
-    palette_colors <- viridis::viridis(8, option = palette)
+    palette_colors <- palette_values # viridis::viridis(8, option = palette)
     col_a <- palette_colors[pmin(count_alpha_df$count, 8)]
     col_a[is.na(col_a)] <- "black"
 
@@ -242,10 +287,13 @@ plt.selstab=
     #                                                                           lineheight = 1.2))
 
     n_colors <- length(unique(plot_data$count))
-    custom_colors <- viridis::viridis(n_colors + 1, option = palette)[-1]
+    bor = 1:length(palette_values)
+    if(isTRUE(blue)) bor = (length(palette_values)/2):1
+    if(isFALSE(blue)) bor = (length(palette_values)/2):(length(palette_values))
+    custom_colors <- grDevices::colorRampPalette(palette_values[bor])(n_colors) # viridis::viridis(n_colors + 1, option = palette)[-1]
 
     plt = ggplot2::ggplot(plot_data, ggplot2::aes(x = index, y = coefficients, color = factor(count))) +
-      ggplot2::geom_point(aes(alpha = factor(count)), size = 3) +
+      ggplot2::geom_point(ggplot2::aes(alpha = factor(count)), size = 3) +
       # scale_color_viridis_d(option = palette, name = "Selection Count", direction = -1) +
       ggplot2::scale_color_manual(values = custom_colors, name = "Selection Count") +
       ggplot2::scale_alpha_manual(values = scales::rescale(as.numeric(levels(factor(plot_data$count))), to = c(0.1, 1)), guide = "none") +

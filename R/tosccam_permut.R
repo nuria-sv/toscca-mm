@@ -26,6 +26,7 @@
 #' @importFrom graphics abline hist legend lines par text
 #' @importFrom utils install.packages installed.packages
 #' @importFrom stats aggregate arima as.formula coefficients cor density predict runif
+#' @importFrom foreach %dopar%
 #' @export
 
 toscamm.perm = function (A, B, nonzero_a, nonzero_b, K, alpha_init = c("eigen",
@@ -33,7 +34,7 @@ toscamm.perm = function (A, B, nonzero_a, nonzero_b, K, alpha_init = c("eigen",
                          cancor, bootCCA = NULL, silent = TRUE, parallel_logic = TRUE,
                          nuisanceVar = 0, testStatType = "CC", model = "lme", lmeformula = " ~ 0 + poly(time,3) + (1|id)", arformula = NULL )
 {
-
+  histNullCCA <- modelCanCor <- x <- y <- `..count..` <- NULL
   # if (!requireNamespace("EnvStats", quietly = TRUE))
   #   install.packages("EnvStats")
   if (!requireNamespace("parallel", quietly = TRUE))
@@ -42,13 +43,11 @@ toscamm.perm = function (A, B, nonzero_a, nonzero_b, K, alpha_init = c("eigen",
       install.packages("doParallel")
   if (!requireNamespace("ggplot2", quietly = TRUE))
         install.packages("ggplot2")
-  if (!requireNamespace("viridis", quietly = TRUE))
-          install.packages("viridis")
   if (!requireNamespace("lme4", quietly = TRUE))
     install.packages("lme4")
   if (!requireNamespace("toscca", quietly = TRUE))
     devtools::install_github("nuria-sv/toscca")
-  library(foreach);library(doParallel)
+  # library(foreach);library(doParallel)
   perm = matrix(NA, nrow = draws, ncol = K)
   if (isTRUE(parallel_logic)) {
     myCluster <- parallel::makeCluster(parallel::detectCores() -
@@ -92,14 +91,38 @@ toscamm.perm = function (A, B, nonzero_a, nonzero_b, K, alpha_init = c("eigen",
   }
   else {
     for (d in 1:draws) {
-      if (isFALSE(silent))
+      # if (isFALSE(silent))
         # progressBar(draws, d)
-      ASample = A[sample(1:nrow(A), nrow(A)), ]
-      perm[d, ] = toscca::CCAtStat(toscca(A = ASample, B = B, K = K,
-                                  alpha_init = alpha_init, combination = FALSE,
-                                  nonzero_a = nonzero_a, nonzero_b = nonzero_b,
-                                  toPlot = FALSE, silent = TRUE)$cancor, ASample,
-                           B, C = nuisanceVar, type = testStatType)[["tStatistic"]]
+
+      res_perm = list()
+      ASample = data.frame(A[,1:2], A[sample(1:nrow(A), nrow(A)), -c(1,2)])
+      X.temp = ASample
+      Y.temp = B
+      cc_time = matrix(NA, length(unique(Y.temp$time)), K)
+      for (k in 1:K) {
+        if(k > 1) {
+          # residualise for subsequent components
+          X.temp = data.frame(X.temp[,c(1,2)],toscca::residualisation(as.matrix(X.temp[,-c(1,2)]), res_perm[[k-1]]$alpha, type = "basic") )
+          Y.temp = data.frame(Y.temp[,c(1,2)],toscca::residualisation(as.matrix(Y.temp[,-c(1,2)]), res_perm[[k-1]]$beta, type = "basic") )
+
+          nz_a_gen = as.numeric(table(res_perm[[k-1]]$alpha != 0)[2])
+          nz_b_gen = as.numeric(table(res_perm[[k-1]]$beta != 0)[2])
+        }
+
+        res_perm[[k]] <- tosccamm(X.temp, Y.temp, folds = 2,
+                                  nonzero_a[k], nonzero_b[k],
+                                  model = model, lmeformula = lmeformula, silent = silent)
+
+        #  for (s in unique(X.temp$time)) {
+        #    w = unique(intersect(X.temp[X.temp$time==s,]$id, Y.temp[Y.temp$time==s,]$id))
+        #    g = as.matrix(X.temp[w, -c(1,2)])%*%res_perm[[k]]$alpha; e = as.matrix(Y.temp[w, -c(1,2)])%*%res_perm[[k]]$beta;
+        #    cc_time[s, k] = abs(cor(g, e))
+        #  }
+        #
+        # m= colMeans(cc_time)
+
+      }
+      perm[d, ] = sapply(1:K, function(k) res_perm[[k]]$cancor)
     }
   }
   if (isTRUE(parallel_logic))
@@ -144,7 +167,7 @@ toscamm.perm = function (A, B, nonzero_a, nonzero_b, K, alpha_init = c("eigen",
   #   text(x = as.character(testStatistic), y = 0.9 * par("usr")[4],
   #        labels = as.character(1:K), cex = 0.9)
 
-    col =viridis::magma(5)
+    col = mpalette[3:7] # viridis::magma(5)
     # library(ggplot2)
     # library(viridis)
     # library(data.table)
@@ -189,17 +212,18 @@ toscamm.perm = function (A, B, nonzero_a, nonzero_b, K, alpha_init = c("eigen",
     ggplot2::geom_histogram(ggplot2::aes(x = x, y = ..count..),
                      data = df,
                      bins = draws / 2,
-                     fill = viridis::viridis(1, option = "magma", alpha = 0.2),
+                     fill = mpalette[5], # viridis::viridis(1, option = "magma", alpha = 0.2),
                      color = NA) +
       # geom_line(data = density_df, aes(x = x, y = y), color = col[5], size = 1) +
-     ggplot2::geom_line(data = density_df, aes(x = x, y = y), color = col[3], size = 1.2, linetype = "dashed") +
-     ggplot2::geom_vline(xintercept = testStat_val, color = col[2], size = 1) +
+     ggplot2::geom_line(data = density_df, ggplot2::aes(x = x, y = y), color = col[1], size = 1.2, linetype = "dashed") +
+     ggplot2::geom_vline(xintercept = testStat_val, color = col[5], size = 1) +
      ggplot2::labs(x = "Canonical Correlation",
            y = "Density / Count",
            title = paste0("")) +
      ggplot2::coord_cartesian(xlim = xlim, ylim = ylim) +
      ggplot2::theme_minimal(base_size = 14) +
-     ggplot2::scale_fill_viridis_d(option = "magma") +
+     # ggplot2::scale_fill_viridis_d(option = "magma") +
+     ggplot2::scale_fill_manual(values = mpalette) +
      ggplot2::annotate("text", x = testStat_val, y = 0.9 * ylim[2], label = as.character(1:K), size = 4) +
      ggplot2::scale_y_continuous(expand = ggplot2::expansion(mult = c(0, 0.05))) +
      ggplot2::theme(legend.position = "none")

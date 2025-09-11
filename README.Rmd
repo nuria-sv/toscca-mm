@@ -34,7 +34,7 @@ devtools::install_github("nuria-sv/tosccamm")
 
 ## TOSCCA-MM
 
-<img src="diagram/tosccamm_tikz.png" height="350" width="700" align="center">
+<img src="man/figures/tosccamm_tikz.png" height="350" width="700" align="center">
 
 
 TOSCCA-MM is a novel extension of sparse CCA that incorporates time dynamics at 
@@ -57,18 +57,29 @@ Furthermore, modelling time in the latent space significantly reduces computatio
 This is a basic example over simulated data of TOSCCA-MM
 
 ```{r load}
-# library(tosccamm)
-source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccam_permut.R")
-source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccamm_core.R")
-source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccamm_folds.R")
-source("C:/Users/PC/OneDrive/github/tosccamm/R/toscca_helpers.R")
-source("C:/Users/PC/OneDrive/github/tosccamm/R/general_functions.R")
+if (!requireNamespace("toscca", quietly = TRUE))
+          devtools::install_github("nuria-sv/toscca")
+
+library(toscca)
+library(tosccamm)
+# source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccam_permut.R")
+# source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccamm_core.R")
+# source("C:/Users/PC/OneDrive/github/tosccamm/R/tosccamm_folds.R")
+# source("C:/Users/PC/OneDrive/github/tosccamm/R/toscca_helpers.R")
+# source("C:/Users/PC/OneDrive/github/tosccamm/R/general_functions.R")
 # for plots
 library(grid)
 library(ggplot2)
 library(gridExtra)
-library(viridis)
+# library(viridis)
 ```
+
+```{r palette, fig.height=2, fig.width=14}
+grad_cols = colorRampPalette(tosccamm:::mpalette)(200)
+image(1:length(grad_cols), 1, as.matrix(1:length(grad_cols)),
+col = grad_cols, axes = FALSE, xlab = "", ylab = "", main = "toscca's colour palette")
+```
+
 
 ```{r simulate data, include=FALSE}
 n = 100
@@ -104,10 +115,10 @@ print(i)
 #Simulate  times of measurement
 times = 1:10
 #random effect
-ui = rnorm(1,0,0.7)
+ui = rnorm(1,0,0.9)
 #Shared canonical vector (with some time effect)
 Zi1 = -(1+times/max(times))^3 + times * 0.5 + ui
-Zi2 = (sin(100*times))^times +   times * 0.65 +rnorm(1,0,0.75)
+Zi2 = (sin(100*times))^times +   times * 0.65 +rnorm(1,0,0.95)
 Zi = cbind(Zi1, Zi2)
 alpha = cbind(alpha1, alpha2)
 beta = cbind(beta1, beta2)
@@ -183,14 +194,14 @@ lv1 = data.frame(id = XX2$id, time = XX2$time, K1=as.matrix(XX2[,-c(1,2)])%*% (r
 lv2 = data.frame(id = XX2$id, time = XX2$time, K2=as.matrix(XX2[,-c(1,2)])%*% (res_k[[2]]$alpha))
 lv3 = data.frame(id = XX2$id, time = XX2$time, K3=as.matrix(XX2[,-c(1,2)])%*% (res_k[[3]]$alpha))
 
-shed_blue_60 <- viridis::magma(5)[4] #"#6864fc"
+shed_blue_60 <- tosccamm:::mpalette[3] # viridis::magma(5)[4] #"#6864fc"
 
 # Update plot1 (no x-axis label)
 plot1 <- ggplot(lv1, aes(x = time, y = scale(K1), group = id)) +
   geom_line(alpha = 0.1, aes(color = "Estimated", linetype = "Estimated", linewidth = "Estimated")) +  # Estimated (black)
   geom_line(data = data.frame(time = sort(unique(lv1$time)), z = scale(Zi2)), aes(x = time, y = scale(z), color = "True", group = 1, , linetype = "True", linewidth = "True")) +  # True (red)
   geom_line(data = data.frame(time = sort(unique(lv1$time)), K1 = aggregate(lv1, by = list(lv1$time), FUN = mean)$K1), aes(x = time, y = scale(K1), group = 1, color = "Smoothed", linetype = "Smoothed", linewidth = "Smoothed")) +  # Smoothed (blue)
-  scale_color_manual(values = c("Estimated" = "black", "True" = viridis::magma(5)[3], "Smoothed" = shed_blue_60)) +  # Specify color manually
+  scale_color_manual(values = c("Estimated" = tosccamm:::mpalette[1], "True" = tosccamm:::mpalette[6], "Smoothed" = shed_blue_60)) +  # Specify color manually
   scale_linewidth_manual(values =c("Estimated" = 0.8, "True" = 1.5, "Smoothed" = 1.5)) +
   scale_linetype_manual(values = c("Estimated" = 3, "True" = 1, "Smoothed" = 2)) +  # Specify line types
   scale_x_continuous(breaks = unique(lv1$time)) +  # Ensure x-axis is integers
@@ -210,7 +221,7 @@ plot2 <- ggplot(lv2, aes(x = time, y = scale(K2), group = id)) +
   geom_line(data = data.frame(time = sort(unique(lv2$time)), z = scale(Zi1)), aes(x = time, y = scale(z), color = "True", group = 1, linetype = "True", linewidth = "True")) +  # True (red)
   geom_line(data = data.frame(time = sort(unique(lv2$time)), K2 = aggregate(lv2, by = list(lv2$time), FUN = mean)$K2), aes(x = time, y = scale(K2), group = 1, color = "Smoothed", linetype = "Smoothed", linewidth = "Smoothed")) +  # Smoothed (blue)
   # geom_smooth(data = lv2, aes(x = time, y = scale(K2), group = 1, color = "Smoothed", linetype = "Smoothed", linewidth = "Smoothed"), se = FALSE) +  # Smoothed (blue)
-  scale_color_manual(values = c("Estimated" = "black", "True" = viridis::magma(5)[3], "Smoothed" = shed_blue_60)) +  # Specify color manually
+  scale_color_manual(values = c("Estimated" = tosccamm:::mpalette[1], "True" = tosccamm:::mpalette[6], "Smoothed" = shed_blue_60)) +  # Specify color manually
   scale_linewidth_manual(values =c("Estimated" = 0.8, "True" = 1.5, "Smoothed" = 1.5)) +
   scale_linetype_manual(values = c("Estimated" = 3, "True" = 1, "Smoothed" = 2)) +  # Specify line types
   scale_x_continuous(breaks = unique(lv2$time)) +  # Ensure x-axis is integers
@@ -226,9 +237,9 @@ plot2 <- ggplot(lv2, aes(x = time, y = scale(K2), group = id)) +
   )
 plot3 <- ggplot(lv3, aes(x = time, y = scale(K3), group = id)) +
   geom_line(alpha = 0.1, aes(color = "Estimated", linetype = "Estimated", linewidth = "Estimated")) +  # Estimated (black)
-  geom_hline(yintercept =0, color = viridis::magma(5)[3], linetype = 1, linewidth = 1.5) +
+  geom_hline(yintercept =0, color = tosccamm:::mpalette[6], linetype = 1, linewidth = 1.5) +
   geom_smooth(data = lv3, aes(x = time, y = scale(K3), group = 1, color = "Smoothed", linetype = "Smoothed", linewidth = "Smoothed"), se = FALSE) +  # Smoothed (blue)
-  scale_color_manual(values = c("Estimated" = "black", "True" = viridis::magma(5)[3], "Smoothed" = shed_blue_60)) +  # Specify color manually
+  scale_color_manual(values = c("Estimated" = tosccamm:::mpalette[1], "True" = tosccamm:::mpalette[6], "Smoothed" = shed_blue_60)) +  # Specify color manually
   scale_linewidth_manual(values =c("Estimated" = 0.8, "True" = 1.5, "Smoothed" = 1.5)) +
   scale_linetype_manual(values = c("Estimated" = 3, "True" = 1, "Smoothed" = 2)) +  # Specify line types
   scale_x_continuous(breaks = unique(lv3$time)) +  # Ensure x-axis is integers
@@ -248,7 +259,7 @@ shared_legend <- ggplot(lv1, aes(x = 1, y = 0, group = id)) +
   geom_line(aes(color = "Estimated", linetype = "Estimated", linewidth = "Estimated")) +
   geom_line(aes(color = "True", , linetype = "True", linewidth = "True")) +
   geom_line(aes(color = "Mean", linetype = "Mean", linewidth = "Mean")) +
-  scale_color_manual(values = c("Estimated" = "black", "True" = viridis::magma(5)[3], "Mean" = shed_blue_60)) +
+  scale_color_manual(values = c("Estimated" = tosccamm:::mpalette[1], "True" = tosccamm:::mpalette[6], "Mean" = shed_blue_60)) +
   scale_linewidth_manual(values =c("Estimated" = 1, "True" = 1, "Mean" = 1)) +
   scale_linetype_manual(values = c("Estimated" = 3, "True" = 1, "Mean" = 2)) +  # Specify line types
   labs(color = "Legend", linetype = "Legend", linewidth ="Legend") +theme_void() +
@@ -274,7 +285,7 @@ axisSize = 15
 W_col1 <-res_k[[1]]$alpha[,1]
 W_col1[W_col1!=0] <-scale(res_k[[1]]$alpha[W_col1!=0], center = F)
 
-shed_blue_60 = viridis::magma(5)[4]
+# shed_blue_60 = viridis::magma(5)[4]
 # Create a data frame for plotting
 df <- data.frame(
   Index = 1:length(W_col1),
@@ -284,7 +295,7 @@ df <- data.frame(
 
 plot_alpha1 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha(tosccamm:::mpalette[1], 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
   labs(x = "", y = "Estimated", title = "") +
   scale_x_continuous(breaks = c(10, 500, 1000)) +  # Set fewer x-axis ticks
   theme_minimal() +
@@ -305,7 +316,7 @@ df <- data.frame(
 
 plot_alpha2 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha(tosccamm:::mpalette[1], 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
   labs(x = "", y = "", title = "") +
   scale_x_continuous(breaks = c(10, 500, 1000)) +  # Set fewer x-axis ticks
   theme_minimal() +
@@ -327,7 +338,7 @@ df <- data.frame(
 
 plot_beta1 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha(tosccamm:::mpalette[1], 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
   labs(x = "", y = "", title = "") +
   scale_x_continuous(breaks = c(10, 100, 200)) +  # Set fewer x-axis ticks
   theme_minimal() +
@@ -350,7 +361,7 @@ df <- data.frame(
 
 plot_beta2 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha(tosccamm:::mpalette[1], 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
   labs(x = "", y = "", title = "") +
   scale_x_continuous(breaks = c(10, 100, 200)) +  # Set fewer x-axis ticks
   theme_minimal() +
@@ -373,7 +384,7 @@ df <- data.frame(
 
 plot_alpha3 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha(tosccamm:::mpalette[1], 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
   labs(x = "", y = "", title = "") +
   theme_minimal() +
   theme(legend.position = "none",
@@ -394,7 +405,7 @@ df <- data.frame(
 
 plot_beta3 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha(tosccamm:::mpalette[1], 0.01), "Non-zero" = shed_blue_60)) +  # Define colors
   labs(x = "", y = "", title = "") +
   theme_minimal() +
   theme(legend.position = "none",
@@ -414,7 +425,7 @@ df <- data.frame(
 
 plotTrue_alpha1 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = viridis::magma(5)[3])) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha(tosccamm:::mpalette[1], 0.01), "Non-zero" = tosccamm:::mpalette[6])) +  # Define colors
   labs(x = "", y = "", title = expression(w[x][2])) +
   scale_x_continuous(breaks = c(10, 500, 1000)) +  # Set fewer x-axis ticks
   theme_minimal() +
@@ -434,7 +445,7 @@ df <- data.frame(
 
 plotTrue_alpha2 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = viridis::magma(5)[3])) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha(tosccamm:::mpalette[1], 0.01), "Non-zero" = tosccamm:::mpalette[6])) +  # Define colors
   labs(x = "", y = "True", title = expression(w[x][1])) +
   scale_x_continuous(breaks = c(10, 500, 1000)) +  # Set fewer x-axis ticks
   theme_minimal() +
@@ -454,7 +465,7 @@ df <- data.frame(
 
 plotTrue_beta1 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = viridis::magma(5)[3])) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha(tosccamm:::mpalette[1], 0.01), "Non-zero" = tosccamm:::mpalette[6])) +  # Define colors
   labs(x = "", y = "", title = expression(w[y][2])) +
   scale_x_continuous(breaks = c(10, 100, 200)) +  # Set fewer x-axis ticks
   theme_minimal() +
@@ -474,7 +485,7 @@ df <- data.frame(
 
 plotTrue_beta2 = ggplot(df, aes(x = Index, y = Value, color = Category)) +
   geom_point(size = 3) +  # Use points with a size of 3 (adjust if needed)
-  scale_color_manual(values = c("Zero" = scales::alpha("black", 0.01), "Non-zero" = viridis::magma(5)[3])) +  # Define colors
+  scale_color_manual(values = c("Zero" = scales::alpha(tosccamm:::mpalette[1], 0.01), "Non-zero" = tosccamm:::mpalette[6])) +  # Define colors
   labs(x = "", y = "", title = expression(w[y][1])) +
   scale_x_continuous(breaks = c(10, 100, 200)) +  # Set fewer x-axis ticks
   theme_minimal() +
@@ -523,15 +534,16 @@ grid.arrange(
 
 
 ```{r gridPlots, echo=FALSE}
-for (k in 1:K) {
-    x.k = res_k[[k]]
-    plt = myHeatmap(x.k$canCor_grid, show_labels = T, K, palette)
-    plt = plt  + ggtitle("cc w.r.t. sparsity levels") + theme(plot.title = element_text(size = 16, face = "bold", color = "black",
-                                                                                        hjust = 0.5, vjust = 1.5,
-                                                                                        lineheight = 1.2))
-    print(plt)
-    }
+# for (k in 1:K) {
+#     x.k = res_k[[k]]
+#     plt = myHeatmap(x.k$canCor_grid, show_labels = T, K, palette)
+#     plt = plt  + ggtitle("cc w.r.t. sparsity levels") + theme(plot.title = element_text(size = 16, face = "bold", color = tosccamm:::mpalette[1],
+#                                                                                         hjust = 0.5, vjust = 1.5,
+#                                                                                         lineheight = 1.2))
+#     print(plt)
+#     }
 
+myHeatmap(res_k, show_labels = T)
 ```
 
 ```{r permutationTesting, echo=F}

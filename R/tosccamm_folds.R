@@ -237,7 +237,7 @@ tosccamm = function(A, B, nonzero_a, nonzero_b, folds = 1, parallel_logic = FALS
     m = sapply(1:ncol(alphaMat[[f]]), function(x) abs(cor(g[g$id %in% iv & g$time==v, x+2], e[e$id %in% iv & e$time==v, x+2])))
 
     if(ncol(gamma_a) + ncol(zeta_a) > 2) canCor_a[f,]  = abs(sapply(2:ncol(gamma_a), function(j) cor(gamma_a[,j], zeta_a[,j])))
-    if(ncol(gamma_a) + ncol(zeta_a) == 2) canCor_a[f,] = abs(cor(gamma_a, zeta_a_b))
+    if(ncol(gamma_a) + ncol(zeta_a) == 2) canCor_a[f,] = abs(cor(gamma_a, zeta_a))
 
     if(ncol(gamma_b) + ncol(zeta_b) > 2) canCor_b[f,]  = abs(sapply(2:ncol(gamma_b), function(j) cor(gamma_b[,j], zeta_b[,j])))
     if(ncol(gamma_b) + ncol(zeta_b) == 2) canCor_b[f,] = abs(cor(gamma_b, zeta_b))
@@ -267,7 +267,7 @@ tosccamm = function(A, B, nonzero_a, nonzero_b, folds = 1, parallel_logic = FALS
     # mat = matrix(canCorKMeans, nrow = length(nonzero_a), ncol = length(nonzero_b))
     rownames(mat) = nonzero_a
     colnames(mat) = nonzero_b
-    myHeatmap(mat, palette = "magma")
+    myHeatmap(mat)
 
   }
 

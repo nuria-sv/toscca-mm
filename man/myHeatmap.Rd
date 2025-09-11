@@ -6,18 +6,21 @@
 \usage{
 myHeatmap(
   mat,
-  palette = "rocket",
+  palette_values = mpalette,
+  blue = NULL,
   xlab = "",
   ylab = "",
   show_axes = TRUE,
   show_labels = TRUE,
-  K = 1
+  K = NULL
 )
 }
 \arguments{
 \item{mat}{A matrix.}
 
-\item{palette}{Character. Name of a palette for the heatmap. Default is "Teal".}
+\item{palette_values}{Character string. Vector of olour values for the heatmap. Default is package's palette.}
+
+\item{blue}{Logical. If TRUE, use only scale of blues from palette.}
 
 \item{xlab}{Character. Label for x axis.}
 

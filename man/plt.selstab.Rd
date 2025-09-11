@@ -2,20 +2,24 @@
 % Please edit documentation in R/general_functions.R
 \name{plt.selstab}
 \alias{plt.selstab}
-\title{Plot slection stability for penalty parameter perfotmance.}
+\title{Plot slection stability for penalty parameter performance.}
 \usage{
-plt.selstab(mat, X, Y, palette = "magma", mm = T)
+plt.selstab(object, X, Y, palette_values = mpalette, blue = T, mm = T, k = 1)
 }
 \arguments{
-\item{mat}{A matrix of canonical correlation for different sparsity levels.}
+\item{object}{A toscca object.}
 
 \item{X}{nxp matrix. Observation matrix.}
 
 \item{Y}{A nxq matrix. Observation matrix.}
 
-\item{palette}{Character. Name of a palette for the heatmap. Default is "Teal".}
+\item{palette_values}{Character. Name of a palette for the heatmap. Default is "Teal".}
+
+\item{blue}{Logical. If TRUE, use only scale of blues from palette.}
 
 \item{mm}{Logic. Indicates whether there are multiple measurements or not. Default is True.}
+
+\item{k}{Numeric. Component, default k =1.}
 }
 \description{
 This function plots cv for different thresholds

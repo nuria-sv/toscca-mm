@@ -72,9 +72,11 @@ summary.tosccamm <- function(object, ...){
 # plot clustring K1 K2
 # plot latent paths
 plot.toscca <- function(x, data_list = NULL, show=c("coefficients","cca-grid"),
-                      Z=NULL, values=NULL, gather.plts = TRUE, mm = NULL, palette = "magma",
+                      Z=NULL, values=NULL, gather.plts = TRUE, mm = NULL, palette_values = mpalette,
                       cent = 3,
                       groupsets=NULL, codataweights=FALSE, ...){
+
+  K_index <- index <- count <- NULL
   if(is.null(mm)) stop("mm must be TRE/FALSE. is True for multiple measurements.")
   show_ggplot <- FALSE
   y<-NULL
@@ -111,7 +113,7 @@ plot.toscca <- function(x, data_list = NULL, show=c("coefficients","cca-grid"),
     # cat("  K=",k, ":\n")
      if(gather.plts) {
        mats = lapply(1:K, function(k) x[[k]]$mat_cc)
-       plt_ls = lapply(mats, function(mat) myHeatmap(mat, palette = palette))
+       plt_ls = lapply(mats, function(mat) myHeatmap(mat, palette_values = palette_values))
        layout_title <- grid::textGrob("cc w.r.t. sparsity levels", gp = grid::gpar(fontsize = 18, fontface = "bold", col = "black", family = "Helvetica"))
 
        gridExtra::grid.arrange(grobs = plt_ls, ncol = K, top = layout_title)
@@ -119,7 +121,7 @@ plot.toscca <- function(x, data_list = NULL, show=c("coefficients","cca-grid"),
      } else {
 
       x.k = x[[1]]
-      plt = myHeatmap(x.k$mat_cc, show_labels = T, K, palette)
+      plt = myHeatmap(x.k$mat_cc, show_labels = T, K, palette_values)
       plt = plt  + ggplot2::ggtitle("cc w.r.t. sparsity levels") +
         ggplot2::theme(plot.title = ggplot2::element_text(size = 16, face = "bold", color = "black",
                                                                                           hjust = 0.5, vjust = 1.5,
@@ -128,7 +130,7 @@ plot.toscca <- function(x, data_list = NULL, show=c("coefficients","cca-grid"),
 
        }
     if (!is.null(data_list)) {
-      print(plt.selstab(x.k$mat_cc[c(1,2, 5, 7, 8), ], X = data_list[[1]], Y= data_list[[2]], mm = mm, palette = palette))
+      print(plt.selstab(x.k$mat_cc[c(1,2, 5, 7, 8), ], X = data_list[[1]], Y= data_list[[2]], mm = mm, palette_values = palette_values))
     } else {
       message("to plot selection stability provide data_list with respective matrices.")
     }
