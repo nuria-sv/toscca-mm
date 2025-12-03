@@ -13,8 +13,7 @@ Status](https://github.com/nuria-sv/toscca-mm/actions/workflows/r.yml/badge.svg)
 <!-- badges: end -->
 
 
-_tosccamm_ is the package to implement the Thresholded Ordered Sparse CCA for Multiple Measurements (TOSCCA-MM) method described in [Senar et al. (??)](
-https://doi.org/10.48550/arXiv.2503.15140).
+_tosccamm_ is the package to implement the Thresholded Ordered Sparse CCA for Multiple Measurements (TOSCCA-MM) method described in [Senar et al. (2025)](https://doi.org/10.1002/bimj.70090).
 
 ## Installation
 
